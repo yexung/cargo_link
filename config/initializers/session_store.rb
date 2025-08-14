@@ -5,6 +5,6 @@ Rails.application.config.session_store :redis_session_store,
     url: ENV.fetch('REDIS_URL', 'redis://localhost:6379/2')
   },
   expire_after: 2.weeks,
-  secure: Rails.env.production?,
+  secure: ENV.fetch('SESSION_SECURE', 'false') == 'true',  # Use env variable
   httponly: true,
   same_site: :lax

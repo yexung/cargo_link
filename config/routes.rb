@@ -66,6 +66,7 @@ Rails.application.routes.draw do
       end
     end
     resources :auctions, only: [:index, :show]
+    resources :trades, only: [:index, :show]
     resources :users, only: [:index, :show, :edit, :update]
     resources :withdrawal_requests, only: [:index, :show] do
       member do
