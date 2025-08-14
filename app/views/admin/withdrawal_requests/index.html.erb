@@ -1,0 +1,144 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- 헤더 -->
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">환전 신청 관리</h1>
+        <p class="mt-2 text-gray-600">판매자의 환전 신청을 검토하고 처리하세요</p>
+      </div>
+    </div>
+
+    <!-- 통계 정보 -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow-sm border p-6">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-yellow-600">
+            <%= WithdrawalRequest.pending.count %>
+          </div>
+          <div class="text-sm text-gray-600">처리 대기</div>
+        </div>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm border p-6">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-green-600">
+            <%= WithdrawalRequest.approved.count %>
+          </div>
+          <div class="text-sm text-gray-600">승인 완료</div>
+        </div>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm border p-6">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-red-600">
+            <%= WithdrawalRequest.rejected.count %>
+          </div>
+          <div class="text-sm text-gray-600">거부</div>
+        </div>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm border p-6">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-blue-600">
+            <%= number_with_delimiter(WithdrawalRequest.approved.sum(:amount).to_i) %>원
+          </div>
+          <div class="text-sm text-gray-600">총 환전 금액</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 필터 -->
+    <div class="bg-white rounded-lg shadow-sm border p-4 mb-6">
+      <%= form_with url: admin_withdrawal_requests_path, method: :get, local: true, class: "flex items-center space-x-4" do |form| %>
+        <div>
+          <%= form.select :status, 
+              options_for_select([
+                ['전체', ''],
+                ['처리대기', 'pending'],
+                ['승인완료', 'approved'],
+                ['거부', 'rejected']
+              ], params[:status]), {}, 
+              { class: "px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" } %>
+        </div>
+        <div>
+          <%= form.submit "필터 적용", class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- 환전 신청 목록 -->
+    <div class="bg-white rounded-lg shadow-sm border">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신청일시</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">판매자</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">신청금액</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">계좌정보</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">처리일시</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">액션</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @withdrawal_requests.each do |request| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= request.requested_at.strftime("%Y-%m-%d %H:%M") %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">
+                    <%= request.seller.name %>
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    <%= request.seller.company_name %>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">
+                    <%= request.formatted_amount %>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= request.bank_name %><br>
+                  <%= request.bank_account_number %><br>
+                  <span class="text-gray-500"><%= request.account_holder_name %></span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                    <%= case request.status
+                        when 'pending' then 'bg-yellow-100 text-yellow-800'
+                        when 'approved' then 'bg-green-100 text-green-800'
+                        when 'rejected' then 'bg-red-100 text-red-800'
+                        end %>">
+                    <%= case request.status
+                        when 'pending' then '처리대기'
+                        when 'approved' then '승인완료'
+                        when 'rejected' then '거부됨'
+                        end %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= request.processed_at&.strftime("%Y-%m-%d %H:%M") || '-' %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <%= link_to "상세보기", admin_withdrawal_request_path(request), 
+                      class: "text-blue-600 hover:text-blue-900" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      
+      <% if @withdrawal_requests.empty? %>
+        <div class="p-6 text-center text-gray-500">
+          환전 신청이 없습니다.
+        </div>
+      <% end %>
+
+      <!-- 페이지네이션 -->
+      <div class="px-6 py-4 border-t">
+        <%= paginate @withdrawal_requests if respond_to?(:paginate) %>
+      </div>
+    </div>
+  </div>
+</div>

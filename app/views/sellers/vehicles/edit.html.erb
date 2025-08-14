@@ -1,0 +1,166 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">차량 정보 수정</h1>
+      <p class="mt-2 text-gray-600">차량 정보를 수정하세요</p>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white shadow-sm rounded-lg">
+      <%= form_with model: @vehicle, url: sellers_vehicle_path(@vehicle), method: :patch, local: true, multipart: true, class: "space-y-6 p-6" do |form| %>
+        <% if @vehicle.errors.any? %>
+          <div class="bg-red-50 border border-red-200 rounded-md p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">오류가 발생했습니다</h3>
+                <div class="mt-2 text-sm text-red-700">
+                  <ul class="list-disc pl-5 space-y-1">
+                    <% @vehicle.errors.full_messages.each do |message| %>
+                      <li><%= message %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Current Images Display -->
+        <% if @vehicle.images.any? %>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">현재 등록된 사진</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <% @vehicle.images.each do |image| %>
+                <div class="relative">
+                  <%= image_tag image, class: "w-full h-24 object-cover rounded-lg" %>
+                </div>
+              <% end %>
+            </div>
+            <p class="mt-2 text-sm text-gray-600">새로운 사진을 업로드하면 기존 사진들이 교체됩니다.</p>
+          </div>
+        <% end %>
+
+        <!-- Basic Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <%= form.label :title, "차량명", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.text_field :title, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", placeholder: "예: 2020년 현대 아반떼" %>
+          </div>
+
+          <div>
+            <%= form.label :brand, "제조사", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.select :brand, options_for_select([
+              ['현대', 'hyundai'],
+              ['기아', 'kia'],
+              ['BMW', 'bmw'],
+              ['벤츠', 'mercedes'],
+              ['아우디', 'audi'],
+              ['토요타', 'toyota'],
+              ['혼다', 'honda'],
+              ['기타', 'other']
+            ], @vehicle.brand), { prompt: '제조사를 선택하세요' }, { class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" } %>
+          </div>
+
+          <div>
+            <%= form.label :model, "모델", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.text_field :model, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", placeholder: "예: 아반떼" %>
+          </div>
+
+          <div>
+            <%= form.label :year, "연식", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.number_field :year, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", placeholder: "예: 2020", min: 1990, max: Date.current.year %>
+          </div>
+
+          <div>
+            <%= form.label :mileage, "주행거리 (km)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.number_field :mileage, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", placeholder: "예: 50000", min: 0 %>
+          </div>
+
+          <div>
+            <%= form.label :fuel_type, "연료 타입", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.select :fuel_type, options_for_select([
+              ['가솔린', 'gasoline'],
+              ['디젤', 'diesel'],
+              ['하이브리드', 'hybrid'],
+              ['전기', 'electric'],
+              ['LPG', 'lpg']
+            ], @vehicle.fuel_type), { prompt: '연료 타입을 선택하세요' }, { class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" } %>
+          </div>
+
+          <div>
+            <%= form.label :transmission, "변속기", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.select :transmission, options_for_select([
+              ['자동', 'automatic'],
+              ['수동', 'manual'],
+              ['CVT', 'cvt']
+            ], @vehicle.transmission), { prompt: '변속기를 선택하세요' }, { class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" } %>
+          </div>
+
+          <div>
+            <%= form.label :color, "색상", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.text_field :color, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", placeholder: "예: 화이트" %>
+          </div>
+
+          <div>
+            <%= form.label :starting_price, "시작 가격 (원)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.number_field :starting_price, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", placeholder: "예: 15000000", min: 0 %>
+            <% if @vehicle.auctions.any? %>
+              <p class="mt-1 text-sm text-yellow-600">⚠ 경매가 등록된 차량의 시작 가격은 신중히 변경하세요.</p>
+            <% end %>
+          </div>
+
+          <div>
+            <%= form.label :location, "위치", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.text_field :location, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", placeholder: "예: 서울시 강남구" %>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <%= form.label :description, "상세 설명", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.text_area :description, rows: 4, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", placeholder: "차량의 상태, 특징, 사고 이력 등을 자세히 설명해주세요" %>
+        </div>
+
+        <!-- Images -->
+        <div>
+          <%= form.label :images, "차량 사진 (선택사항)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.file_field :images, multiple: true, accept: "image/*", class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+          <p class="mt-1 text-sm text-gray-500">새로운 사진을 선택하지 않으면 기존 사진이 유지됩니다. 새로 업로드하면 기존 사진들이 모두 교체됩니다.</p>
+        </div>
+
+        <!-- Status Information -->
+        <% if @vehicle.auctions.any? %>
+          <div class="bg-blue-50 rounded-lg p-4">
+            <h3 class="text-sm font-medium text-blue-900 mb-2">경매 상태</h3>
+            <p class="text-sm text-blue-800">이 차량은 <%= @vehicle.auctions.count %>개의 경매에 등록되어 있습니다. 차량 정보 수정 시 경매에도 영향을 줄 수 있습니다.</p>
+          </div>
+        <% end %>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-4 pt-6 border-t">
+          <%= link_to "취소", sellers_vehicle_path(@vehicle), class: "px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+          <%= form.submit "수정 완료", class: "px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Delete Section -->
+    <div class="mt-8 bg-red-50 border border-red-200 rounded-lg p-6">
+      <h3 class="text-lg font-medium text-red-900 mb-4">위험 구역</h3>
+      <p class="text-sm text-red-800 mb-4">차량을 삭제하면 관련된 모든 경매와 데이터가 함께 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</p>
+      <%= link_to "차량 삭제", sellers_vehicle_path(@vehicle), 
+          method: :delete, 
+          data: { 
+            confirm: "정말로 이 차량을 삭제하시겠습니까? 관련된 모든 경매도 함께 삭제됩니다.",
+            turbo_confirm: "정말로 이 차량을 삭제하시겠습니까? 관련된 모든 경매도 함께 삭제됩니다."
+          },
+          class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" %>
+    </div>
+  </div>
+</div>

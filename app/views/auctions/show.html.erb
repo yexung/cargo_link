@@ -1,0 +1,506 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- 뒤로가기 -->
+    <div class="mb-6">
+      <%= link_to "← 경매 목록으로", auctions_path, 
+          class: "text-blue-600 hover:text-blue-800" %>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- 왼쪽: 차량 정보 -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- 차량 이미지 -->
+        <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div class="aspect-w-16 aspect-h-9 bg-gray-200">
+            <% if @auction.vehicle.images.attached? && @auction.vehicle.images.any? %>
+              <div class="w-full h-96 cursor-pointer hover:opacity-90 transition-opacity" 
+                   onclick="openImageModal(0)">
+                <%= image_tag rails_blob_path(@auction.vehicle.images.first, only_path: true), 
+                    class: "w-full h-96 object-cover" %>
+              </div>
+            <% else %>
+              <div class="w-full h-96 bg-gray-300 flex items-center justify-center">
+                <span class="text-gray-500 text-lg">이미지 없음</span>
+              </div>
+            <% end %>
+          </div>
+          
+          <!-- 이미지 썸네일 -->
+          <% if @auction.vehicle.images.attached? && @auction.vehicle.images.count > 1 %>
+            <div class="p-4 border-t">
+              <div class="flex space-x-2 overflow-x-auto">
+                <% @auction.vehicle.images.each_with_index do |image, index| %>
+                  <div class="cursor-pointer hover:opacity-75 transition-opacity" 
+                       onclick="openImageModal(<%= index %>)">
+                    <%= image_tag image, 
+                        class: "w-20 h-20 object-cover rounded #{index == 0 ? 'ring-2 ring-blue-500' : ''}" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- 차량 상세 정보 -->
+        <div class="bg-white rounded-lg shadow-sm border p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-4">차량 정보</h2>
+          
+          <div class="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <span class="text-sm text-gray-600">브랜드</span>
+              <p class="font-medium"><%= @auction.vehicle.brand %></p>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">모델</span>
+              <p class="font-medium"><%= @auction.vehicle.model %></p>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">연식</span>
+              <p class="font-medium"><%= @auction.vehicle.year %>년</p>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">주행거리</span>
+              <p class="font-medium"><%= number_with_delimiter(@auction.vehicle.mileage) %>km</p>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">연료</span>
+              <p class="font-medium">
+                <%= case @auction.vehicle.fuel_type
+                    when 'gasoline' then '가솔린'
+                    when 'diesel' then '디젤'
+                    when 'hybrid' then '하이브리드'
+                    when 'electric' then '전기'
+                    else @auction.vehicle.fuel_type
+                    end %>
+              </p>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">변속기</span>
+              <p class="font-medium">
+                <%= case @auction.vehicle.transmission
+                    when 'manual' then '수동'
+                    when 'automatic' then '자동'
+                    when 'cvt' then 'CVT'
+                    else @auction.vehicle.transmission
+                    end %>
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <span class="text-sm text-gray-600">상세 설명</span>
+            <p class="mt-1 text-gray-900 whitespace-pre-wrap"><%= @auction.vehicle.description %></p>
+          </div>
+        </div>
+
+        <!-- 입찰 히스토리 -->
+        <div class="bg-white rounded-lg shadow-sm border p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-4">입찰 히스토리</h2>
+          
+          <% if @bids.any? %>
+            <div class="space-y-3">
+              <% @bids.each do |bid| %>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-md">
+                  <div>
+                    <span class="font-medium text-gray-900">
+                      <%= bid.buyer&.name || "구매자 #{bid.buyer_id}" %>
+                    </span>
+                    <span class="text-sm text-gray-500 ml-2">
+                      <%= bid.bid_time.strftime("%m월 %d일 %H:%M") %>
+                    </span>
+                  </div>
+                  <span class="font-bold text-blue-600">
+                    <%= format_currency_detailed(bid.amount) %>
+                  </span>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-gray-500 text-center py-8">아직 입찰이 없습니다</p>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- 오른쪽: 경매 정보 및 입찰 -->
+      <div class="space-y-6">
+        <!-- 경매 상태 -->
+        <div class="bg-white rounded-lg shadow-sm border p-6">
+          <div class="text-center mb-4">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">
+              <%= @auction.vehicle.title %>
+            </h1>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+              <%= @auction.currently_active? ? 'bg-green-100 text-green-800' : 
+                  @auction.currently_upcoming? ? 'bg-yellow-100 text-yellow-800' : 
+                  'bg-red-100 text-red-800' %>">
+              <%= @auction.currently_active? ? '진행 중' : 
+                  @auction.currently_upcoming? ? '예정' : '종료' %>
+            </span>
+          </div>
+
+          <!-- 현재가 -->
+          <div class="text-center mb-6">
+            <div class="text-sm text-gray-600 mb-1">현재가</div>
+            <div class="text-3xl font-bold text-blue-600">
+              <%= format_currency_detailed(@auction.current_price) %>
+            </div>
+            <div class="text-sm text-gray-500 mt-1">
+              입찰 단위: <%= format_currency(@auction.increment_amount) %>
+            </div>
+            <div class="text-xs text-gray-400 mt-1">
+              다음 최소 입찰가: <%= format_currency_detailed(@auction.current_price + @auction.increment_amount) %>
+            </div>
+          </div>
+
+          <!-- 시간 정보 -->
+          <div class="border-t border-b py-4 mb-6">
+            <% if @auction.currently_active? %>
+              <div class="text-center">
+                <div class="text-sm text-gray-600">남은 시간</div>
+                <div class="text-xl font-bold text-red-600" id="countdown">
+                  <!-- JavaScript로 카운트다운 -->
+                </div>
+              </div>
+            <% elsif @auction.upcoming? %>
+              <div class="text-center">
+                <div class="text-sm text-gray-600">시작 예정</div>
+                <div class="text-lg font-medium">
+                  <%= @auction.start_time.strftime("%m월 %d일 %H:%M") %>
+                </div>
+              </div>
+            <% else %>
+              <div class="text-center">
+                <div class="text-sm text-gray-600">경매 종료</div>
+                <div class="text-lg font-medium">
+                  <%= @auction.end_time.strftime("%m월 %d일 %H:%M") %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- 입찰 폼 -->
+          <% if @can_bid %>
+            <div class="bg-blue-50 rounded-lg p-4 mb-4">
+              <h3 class="text-lg font-semibold text-blue-900 mb-2">💰 입찰하기</h3>
+              <% current_user_bids = @auction.bids.where(buyer: current_buyer) %>
+              <% if current_user_bids.any? %>
+                <p class="text-sm text-blue-700 mb-3">
+                  이전 입찰: <%= format_currency_detailed(current_user_bids.maximum(:amount)) %> 
+                  <span class="text-blue-600">(재입찰 가능)</span>
+                </p>
+              <% end %>
+              
+              <%= form_with url: place_bid_auction_path(@auction), method: :post, local: true, scope: :bid, class: "space-y-4" do |form| %>
+                <div>
+                  <%= form.label :amount, "입찰 금액", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                  <div class="relative">
+                    <%= form.text_field :amount, 
+                        value: number_with_delimiter(@auction.current_price + @auction.increment_amount),
+                        class: "w-full px-3 py-2 pr-8 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+                        placeholder: number_with_delimiter(@auction.current_price + @auction.increment_amount),
+                        id: "bid-amount-input",
+                        data: { min: @auction.current_price + @auction.increment_amount } %>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <span class="text-gray-500 text-sm">원</span>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-1">
+                    최소 입찰가: <%= format_currency_detailed(@auction.current_price + @auction.increment_amount) %>
+                  </p>
+                </div>
+                
+                <script>
+                  document.addEventListener('DOMContentLoaded', function() {
+                    const bidInput = document.getElementById('bid-amount-input');
+                    
+                    if (bidInput) {
+                      // 콤마 추가 함수
+                      function addCommas(num) {
+                        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                      }
+                      
+                      // 콤마 제거 함수
+                      function removeCommas(num) {
+                        return num.replace(/,/g, '');
+                      }
+                      
+                      // 숫자만 허용하는 함수
+                      function isValidInput(input) {
+                        return /^\d+(,\d{3})*$/.test(input) || /^\d+$/.test(input);
+                      }
+                      
+                      bidInput.addEventListener('input', function(e) {
+                        let value = e.target.value;
+                        
+                        // 콤마 제거 후 숫자만 남기기
+                        let numericValue = removeCommas(value);
+                        
+                        // 숫자가 아닌 문자 제거
+                        numericValue = numericValue.replace(/[^\d]/g, '');
+                        
+                        if (numericValue) {
+                          // 콤마 추가 후 다시 설정
+                          e.target.value = addCommas(numericValue);
+                        }
+                      });
+                      
+                      // 폼 제출 시 콤마 제거
+                      bidInput.closest('form').addEventListener('submit', function() {
+                        bidInput.value = removeCommas(bidInput.value);
+                      });
+                      
+                      // 포커스 시 콤마가 있는 상태에서 커서 위치 조정
+                      bidInput.addEventListener('focus', function() {
+                        setTimeout(() => {
+                          this.setSelectionRange(this.value.length, this.value.length);
+                        }, 0);
+                      });
+                    }
+                  });
+                </script>
+                <%= form.submit "입찰하기", 
+                    class: "w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 font-medium transition-colors duration-200" %>
+              <% end %>
+            </div>
+          <% elsif buyer_signed_in? %>
+            <div class="text-center text-gray-500">
+              <% if @auction.upcoming? %>
+                경매가 아직 시작되지 않았습니다
+              <% elsif @auction.ended? %>
+                <% if @auction.winner == current_buyer %>
+                  <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                    <h3 class="text-lg font-semibold text-green-800 mb-2">🎉 축하합니다! 낙찰되었습니다</h3>
+                    <p class="text-green-600 mb-4">낙찰가: <%= format_currency_detailed(@auction.current_price) %></p>
+                    <% if @auction.payment.present? %>
+                      <%= link_to "결제 진행하기", payment_path(@auction.payment), 
+                          class: "w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 font-medium" %>
+                    <% else %>
+                      <%= link_to "결제 생성하기", payments_path(auction_id: @auction.id), method: :post,
+                          class: "w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 font-medium" %>
+                    <% end %>
+                  </div>
+                <% else %>
+                  <p>경매가 종료되었습니다</p>
+                  <% if @auction.winner.present? %>
+                    <p class="text-sm text-gray-400">낙찰자: <%= @auction.winner.name %></p>
+                  <% end %>
+                <% end %>
+              <% else %>
+                경매가 종료되었습니다
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center">
+              <%= link_to "로그인하여 입찰하기", new_buyer_session_path, 
+                  class: "w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 font-medium block text-center" %>
+            </div>
+          <% end %>
+
+          <!-- 입찰 통계 -->
+          <div class="mt-6 pt-6 border-t">
+            <div class="grid grid-cols-2 gap-4 text-center">
+              <div>
+                <div class="text-2xl font-bold text-gray-900"><%= @bids.count %></div>
+                <div class="text-sm text-gray-600">입찰 수</div>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-gray-900">
+                  <%= @bids.select(:buyer_id).distinct.count %>
+                </div>
+                <div class="text-sm text-gray-600">참여자 수</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 판매자 정보 -->
+        <div class="bg-white rounded-lg shadow-sm border p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">판매자 정보</h3>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="text-gray-600">판매자명:</span>
+              <span class="font-medium"><%= @auction.vehicle.seller.name %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">회사명:</span>
+              <span class="font-medium"><%= @auction.vehicle.seller.company_name %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">연락처:</span>
+              <span class="font-medium"><%= @auction.vehicle.seller.phone %></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 경매 안내 -->
+        <div class="bg-blue-50 border border-blue-200 p-4 rounded-md">
+          <h4 class="font-medium text-blue-900 mb-2">경매 안내</h4>
+          <ul class="text-sm text-blue-700 space-y-1">
+            <li>• 종료 10분 전 입찰 시 10분 연장</li>
+            <li>• 낙찰 시 5% 수수료 발생</li>
+            <li>• 입금은 24시간 내 완료 필요</li>
+            <li>• 허위 입찰 시 계정 제재</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 이미지 모달 -->
+<% if @auction.vehicle.images.attached? && @auction.vehicle.images.any? %>
+  <!-- 이미지 모달 -->
+  <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-95 hidden" style="z-index: 999999;">
+    <!-- 이미지 -->
+    <div class="flex items-center justify-center w-full h-full p-8">
+      <img id="modalImage" src="" alt="차량 사진" class="max-w-full max-h-full object-contain">
+    </div>
+  </div>
+
+  <!-- 모달 컨트롤 버튼들 (모달과 분리) -->
+  <!-- 닫기 버튼 -->
+  <button id="closeBtn" onclick="closeImageModal()" 
+          class="fixed top-4 right-4 w-12 h-12 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center hidden"
+          style="z-index: 1000000;">
+    <span class="text-2xl font-bold">×</span>
+  </button>
+  
+  <!-- 이전 버튼 -->
+  <button id="prevBtn" onclick="previousImage()" 
+          class="fixed left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center hidden"
+          style="z-index: 1000000;">
+    <span class="text-xl">‹</span>
+  </button>
+  
+  <!-- 다음 버튼 -->
+  <button id="nextBtn" onclick="nextImage()" 
+          class="fixed right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center hidden"
+          style="z-index: 1000000;">
+    <span class="text-xl">›</span>
+  </button>
+  
+  <!-- 이미지 카운터 -->
+  <div id="counterDiv" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-black bg-opacity-70 text-white rounded hidden"
+       style="z-index: 1000000;">
+    <span id="imageCounter">1 / <%= @auction.vehicle.images.count %></span>
+  </div>
+
+  <script>
+    let currentImageIndex = 0;
+    const images = [
+      <% @auction.vehicle.images.each do |image| %>
+        "<%= url_for(image) %>",
+      <% end %>
+    ];
+    const totalImages = images.length;
+
+    function openImageModal(index) {
+      currentImageIndex = index;
+      // 모달 표시
+      document.getElementById('imageModal').classList.remove('hidden');
+      // 모든 컨트롤 버튼 표시
+      document.getElementById('closeBtn').classList.remove('hidden');
+      document.getElementById('prevBtn').classList.remove('hidden');
+      document.getElementById('nextBtn').classList.remove('hidden');
+      document.getElementById('counterDiv').classList.remove('hidden');
+      
+      updateModalImage();
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageModal() {
+      // 모달 숨김
+      document.getElementById('imageModal').classList.add('hidden');
+      // 모든 컨트롤 버튼 숨김
+      document.getElementById('closeBtn').classList.add('hidden');
+      document.getElementById('prevBtn').classList.add('hidden');
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('counterDiv').classList.add('hidden');
+      
+      document.body.style.overflow = 'auto';
+    }
+
+    function updateModalImage() {
+      const modalImage = document.getElementById('modalImage');
+      const imageCounter = document.getElementById('imageCounter');
+      
+      modalImage.src = images[currentImageIndex];
+      imageCounter.textContent = `${currentImageIndex + 1} / ${totalImages}`;
+      
+      // 버튼 표시/숨김 (이전/다음 버튼만)
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      
+      if (currentImageIndex > 0) {
+        prevBtn.style.display = 'flex';
+      } else {
+        prevBtn.style.display = 'none';
+      }
+      
+      if (currentImageIndex < totalImages - 1) {
+        nextBtn.style.display = 'flex';
+      } else {
+        nextBtn.style.display = 'none';
+      }
+    }
+
+    function previousImage() {
+      if (currentImageIndex > 0) {
+        currentImageIndex--;
+        updateModalImage();
+      }
+    }
+
+    function nextImage() {
+      if (currentImageIndex < totalImages - 1) {
+        currentImageIndex++;
+        updateModalImage();
+      }
+    }
+
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeImageModal();
+      }
+    });
+
+    // 모달 배경 클릭 시 닫기
+    document.getElementById('imageModal').addEventListener('click', function(event) {
+      if (event.target === this) {
+        closeImageModal();
+      }
+    });
+  </script>
+<% end %>
+
+<!-- 카운트다운 JavaScript -->
+<% if @auction.currently_active? %>
+<script>
+  function updateCountdown() {
+    const endTime = new Date('<%= @auction.end_time.iso8601 %>').getTime();
+    const now = new Date().getTime();
+    const distance = endTime - now;
+    
+    const element = document.getElementById('countdown');
+    if (element) {
+      if (distance > 0) {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        element.innerHTML = days + "일 " + hours + "시 " + minutes + "분 " + seconds + "초";
+      } else {
+        element.innerHTML = "경매 종료";
+        // 페이지 자동 새로고침
+        setTimeout(() => location.reload(), 2000);
+      }
+    }
+  }
+  
+  // 1초마다 업데이트
+  setInterval(updateCountdown, 1000);
+  updateCountdown(); // 즉시 실행
+</script>
+<% end %>

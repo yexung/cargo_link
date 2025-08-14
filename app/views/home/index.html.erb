@@ -1,0 +1,327 @@
+<!-- Hero Section -->
+<div class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 overflow-hidden">
+  <!-- Background Pattern -->
+  <div class="absolute inset-0 bg-black opacity-20"></div>
+  <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.05\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"2\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+  
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+    <div class="text-center">
+      <!-- Logo/Brand -->
+      <div class="mb-8">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-white bg-opacity-20 rounded-full mb-6 border border-white border-opacity-30">
+          <svg class="w-10 h-10 text-blue-300" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11C5.84 5 5.28 5.42 5.08 6.01L3 12v8a1 1 0 001 1h1a1 1 0 001-1v-1h12v1a1 1 0 001 1h1a1 1 0 001-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+          </svg>
+        </div>
+      </div>
+      
+      <!-- Main Heading -->
+      <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+        <span class="block">글로벌 중고차</span>
+        <span class="block text-blue-300">수출 경매 플랫폼</span>
+      </h1>
+      
+      <!-- Subtitle -->
+      <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+        전 세계로 중고차를 수출하는 <span class="font-semibold text-white">프리미엄 온라인 경매 서비스</span><br>
+        투명하고 안전한 거래로 새로운 기회를 만나보세요
+      </p>
+      
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+        <a href="<%= new_seller_registration_path %>" class="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 flex items-center">
+          <span>판매자 등록</span>
+          <svg class="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+        </a>
+        <a href="<%= auctions_path %>" class="px-8 py-4 bg-white text-blue-700 font-semibold rounded-full border-2 border-white hover:bg-blue-50 hover:border-blue-100 transition-all duration-200 shadow-lg">
+          경매 둘러보기
+        </a>
+      </div>
+      
+      <!-- Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+        <div class="text-center">
+          <div class="text-3xl md:text-4xl font-bold text-white mb-2"><%= @total_auctions %></div>
+          <div class="text-blue-200 text-sm md:text-base">진행 중인 경매</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl md:text-4xl font-bold text-white mb-2"><%= @total_vehicles %></div>
+          <div class="text-blue-200 text-sm md:text-base">등록된 차량</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl md:text-4xl font-bold text-white mb-2"><%= @total_trades %></div>
+          <div class="text-blue-200 text-sm md:text-base">P2P 거래</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl md:text-4xl font-bold text-white mb-2"><%= @total_users %></div>
+          <div class="text-blue-200 text-sm md:text-base">인증된 사용자</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Wave Divider -->
+  <div class="absolute bottom-0 left-0 right-0">
+    <svg class="w-full h-16 text-white" viewBox="0 0 1200 120" preserveAspectRatio="none">
+      <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="currentColor"></path>
+      <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" fill="currentColor"></path>
+      <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="currentColor"></path>
+    </svg>
+  </div>
+</div>
+
+<!-- Features Section -->
+<div class="py-20 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">왜 우리 플랫폼을 선택해야 할까요?</h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">투명하고 안전한 중고차 수출 경매를 위한 모든 것이 준비되어 있습니다</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Feature 1 -->
+      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">투명한 경매 시스템</h3>
+        <p class="text-gray-600 leading-relaxed">실시간 입찰 현황과 투명한 가격 정보로 공정한 경매를 보장합니다. 모든 과정이 기록되어 추적 가능합니다.</p>
+      </div>
+      
+      <!-- Feature 2 -->
+      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">안전한 결제 시스템</h3>
+        <p class="text-gray-600 leading-relaxed">관리자 직접 입금 확인 시스템으로 안전한 거래를 보장합니다. 24시간 내 입금 확인으로 빠른 정산이 가능합니다.</p>
+      </div>
+      
+      <!-- Feature 3 -->
+      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">글로벌 네트워크</h3>
+        <p class="text-gray-600 leading-relaxed">전 세계 구매자와 판매자가 연결되는 글로벌 플랫폼입니다. 다양한 국가의 수요와 공급을 만나보세요.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Live Auctions Section -->
+<div class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center mb-12">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">진행 중인 경매</h2>
+        <p class="text-xl text-gray-600">지금 바로 참여할 수 있는 실시간 경매를 확인하세요</p>
+      </div>
+      <a href="<%= auctions_path %>" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors duration-200">
+        모든 경매 보기
+        <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+        </svg>
+      </a>
+    </div>
+    
+    <% if @active_auctions.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% @active_auctions.each do |auction| %>
+          <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+            <!-- Auction Image -->
+            <div class="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300">
+              <% if auction.vehicle.images.attached? && auction.vehicle.images.any? %>
+                <%= image_tag rails_blob_path(auction.vehicle.images.first, only_path: true), class: "w-full h-full object-cover" %>
+              <% else %>
+                <div class="w-full h-full flex items-center justify-center">
+                  <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+              <% end %>
+              <!-- Status Badge -->
+              <div class="absolute top-4 right-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  진행 중
+                </span>
+              </div>
+            </div>
+            
+            <!-- Auction Info -->
+            <div class="p-6">
+              <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2"><%= auction.vehicle.title %></h3>
+              <div class="flex items-center text-sm text-gray-600 mb-4">
+                <span><%= auction.vehicle.brand %> <%= auction.vehicle.model %></span>
+                <span class="mx-2">•</span>
+                <span><%= auction.vehicle.year %>년</span>
+                <span class="mx-2">•</span>
+                <span><%= format_number(auction.vehicle.mileage) %>km</span>
+              </div>
+              
+              <!-- Price -->
+              <div class="mb-4">
+                <div class="text-sm text-gray-600">현재가</div>
+                <div class="text-2xl font-bold text-blue-600"><%= format_currency_detailed(auction.current_price) %></div>
+              </div>
+              
+              <!-- Time Remaining -->
+              <div class="mb-4 p-3 bg-red-50 rounded-lg">
+                <div class="text-sm text-red-600 font-medium">남은 시간</div>
+                <div class="text-lg font-bold text-red-700" id="countdown-<%= auction.id %>">
+                  <!-- JavaScript countdown -->
+                </div>
+              </div>
+              
+              <!-- Action Button -->
+              <a href="<%= auction_path(auction) %>" class="block w-full text-center bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200">
+                입찰 참여하기
+              </a>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-16">
+        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">현재 진행 중인 경매가 없습니다</h3>
+        <p class="text-gray-600 mb-6">새로운 경매가 등록되면 여기에 표시됩니다</p>
+        <a href="<%= auctions_path %>" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors duration-200">
+          경매 일정 확인하기
+        </a>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- P2P Trading Section -->
+<div class="py-20 bg-gradient-to-br from-blue-50 to-indigo-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">P2P 중고차 거래</h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">개인 간 직접 거래로 더 합리적인 가격에 중고차를 사고팔 수 있습니다</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      <!-- Feature 1 -->
+      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">개인 간 직거래</h3>
+        <p class="text-gray-600">중간 수수료 없이 판매자와 구매자가 직접 만나 거래할 수 있습니다.</p>
+      </div>
+      
+      <!-- Feature 2 -->
+      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">안전한 거래</h3>
+        <p class="text-gray-600">검증된 사용자들과의 거래로 안전하고 신뢰할 수 있는 중고차 거래를 보장합니다.</p>
+      </div>
+      
+      <!-- Feature 3 -->
+      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
+          <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">합리적인 가격</h3>
+        <p class="text-gray-600">딜러 마진 없이 시장 가격으로 더 저렴하게 구매하고 더 비싸게 판매할 수 있습니다.</p>
+      </div>
+    </div>
+    
+    <div class="text-center">
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="<%= vehicles_path %>" class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors duration-200">
+          차량 둘러보기
+          <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+        </a>
+        <% if seller_signed_in? %>
+          <a href="<%= new_sellers_vehicle_path %>" class="inline-flex items-center px-8 py-4 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition-colors duration-200">
+            내 차량 등록하기
+            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+          </a>
+        <% else %>
+          <a href="<%= new_seller_registration_path %>" class="inline-flex items-center px-8 py-4 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition-colors duration-200">
+            판매자 가입하기
+            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+            </svg>
+          </a>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA Section -->
+<div class="py-20 bg-gradient-to-r from-blue-600 to-indigo-700">
+  <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">지금 바로 시작하세요</h2>
+    <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">글로벌 중고차 수출의 새로운 기회를 놓치지 마세요. 투명하고 안전한 거래로 성공적인 비즈니스를 시작하세요.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="<%= new_seller_registration_path %>" class="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-full hover:bg-gray-100 transition-colors duration-200">
+        판매자 등록
+        <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+        </svg>
+      </a>
+      <a href="<%= new_buyer_registration_path %>" class="inline-flex items-center px-8 py-4 bg-transparent text-white font-semibold rounded-full border-2 border-white hover:bg-white hover:text-blue-600 transition-colors duration-200">
+        구매자 등록
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Countdown JavaScript -->
+<script>
+  function updateCountdowns() {
+    <% @active_auctions&.each do |auction| %>
+      const endTime<%= auction.id %> = new Date('<%= auction.end_time.iso8601 %>').getTime();
+      const element<%= auction.id %> = document.getElementById('countdown-<%= auction.id %>');
+      
+      if (element<%= auction.id %>) {
+        const now = new Date().getTime();
+        const distance = endTime<%= auction.id %> - now;
+        
+        if (distance > 0) {
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          
+          element<%= auction.id %>.innerHTML = days + "일 " + hours + "시 " + minutes + "분 " + seconds + "초";
+        } else {
+          element<%= auction.id %>.innerHTML = "경매 종료";
+        }
+      }
+    <% end %>
+  }
+  
+  // 1초마다 업데이트
+  setInterval(updateCountdowns, 1000);
+  updateCountdowns(); // 즉시 실행
+</script>

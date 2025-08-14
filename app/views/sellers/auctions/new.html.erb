@@ -1,0 +1,96 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">새 경매 등록</h1>
+      <p class="mt-2 text-gray-600">등록된 차량으로 경매를 시작하세요</p>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white shadow-sm rounded-lg">
+      <%= form_with model: [@auction], url: sellers_auctions_path, local: true, class: "space-y-6 p-6" do |form| %>
+        <% if @auction.errors.any? %>
+          <div class="bg-red-50 border border-red-200 rounded-md p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">오류가 발생했습니다</h3>
+                <div class="mt-2 text-sm text-red-700">
+                  <ul class="list-disc pl-5 space-y-1">
+                    <% @auction.errors.full_messages.each do |message| %>
+                      <li><%= message %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Vehicle Selection -->
+        <div>
+          <%= form.label :vehicle_id, "차량 선택", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.select :vehicle_id, options_from_collection_for_select(@vehicles, :id, :title, @auction.vehicle_id), 
+              { prompt: '경매할 차량을 선택하세요' }, 
+              { class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" } %>
+          <p class="mt-1 text-sm text-gray-500">등록된 차량 중에서 선택하세요</p>
+        </div>
+
+        <!-- Basic Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <div>
+            <%= form.label :start_time, "경매 시작 시간", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.datetime_local_field :start_time, value: @auction.start_time&.strftime("%Y-%m-%dT%H:%M"), class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+          </div>
+
+          <div>
+            <%= form.label :end_time, "경매 종료 시간", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.datetime_local_field :end_time, value: @auction.end_time&.strftime("%Y-%m-%dT%H:%M"), class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+          </div>
+
+          <div>
+            <%= form.label :reserve_price, "최소 입찰가 (원)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.number_field :reserve_price, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", placeholder: "예: 15000000", min: 0 %>
+            <p class="mt-1 text-sm text-gray-500">이 가격 이상에서만 낙찰됩니다</p>
+          </div>
+
+        </div>
+
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-4 pt-6 border-t">
+          <%= link_to "취소", sellers_dashboard_path, class: "px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+          <%= form.submit "경매 등록", class: "px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Help Section -->
+    <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+      <h3 class="text-lg font-medium text-blue-900 mb-4">경매 등록 안내</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-800">
+        <div>
+          <h4 class="font-medium mb-2">경매 시간 설정</h4>
+          <ul class="space-y-1 text-blue-700">
+            <li>• 최소 1시간 이상 진행하세요</li>
+            <li>• 적절한 시간대를 선택하세요</li>
+            <li>• 주말이나 저녁 시간이 효과적입니다</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-medium mb-2">가격 설정 팁</h4>
+          <ul class="space-y-1 text-blue-700">
+            <li>• 최소 입찰가는 희망가의 70-80%</li>
+            <li>• 즉시 구매가는 시장가 수준</li>
+            <li>• 너무 높으면 입찰자가 적어집니다</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

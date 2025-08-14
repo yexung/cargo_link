@@ -1,0 +1,178 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- 헤더 -->
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">경매 관리</h1>
+        <p class="mt-2 text-gray-600">경매용 차량을 등록하고 경매를 개설하세요 (관리자 승인 필요)</p>
+      </div>
+      <%= link_to "경매용 차량 등록", new_vehicle_path, 
+          class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700" %>
+    </div>
+
+    <!-- 필터 섹션 -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+      <%= form_with url: vehicles_path, method: :get, local: true, class: "space-y-4" do |form| %>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <!-- 검색 -->
+          <div class="lg:col-span-2">
+            <%= form.text_field :q, value: params[:q], placeholder: "차량명, 브랜드, 모델 검색...", 
+                class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" %>
+          </div>
+          
+          <!-- 브랜드 필터 -->
+          <div>
+            <%= form.select :brand, options_for_select([['모든 브랜드', '']] + @brands.map { |b| [b, b] }, params[:brand]), 
+                {}, { class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" } %>
+          </div>
+          
+          <!-- 연료 타입 필터 -->
+          <div>
+            <%= form.select :fuel_type, options_for_select([['모든 연료', '']] + @fuel_types.map { |f| [f == 'gasoline' ? '가솔린' : f == 'diesel' ? '디젤' : f == 'hybrid' ? '하이브리드' : f == 'electric' ? '전기' : f, f] }, params[:fuel_type]), 
+                {}, { class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" } %>
+          </div>
+          
+          <!-- 검색 버튼 -->
+          <div>
+            <%= form.submit "검색", class: "w-full bg-blue-600 text-white py-3 px-6 rounded-xl hover:bg-blue-700 transition-colors duration-200 font-semibold" %>
+          </div>
+        </div>
+        
+        <!-- 정렬 및 초기화 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <%= form.select :sort, options_for_select([
+                  ['최신순', ''],
+                  ['가격 낮은순', 'price_low'],
+                  ['가격 높은순', 'price_high'],
+                  ['연식 최신순', 'year_new'],
+                  ['연식 오래된순', 'year_old']
+                ], params[:sort]), 
+                {}, { class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" } %>
+          </div>
+          <div>
+            <%= link_to "초기화", vehicles_path, class: "w-full bg-gray-200 text-gray-700 py-3 px-6 rounded-xl hover:bg-gray-300 transition-colors duration-200 font-semibold text-center block" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- 차량 목록 -->
+    <% if @vehicles.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+        <% @vehicles.each do |vehicle| %>
+          <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col h-full">
+            <!-- 차량 이미지 -->
+            <div class="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300">
+              <% if vehicle.images.attached? %>
+                <img src="<%= url_for(vehicle.images.first) %>" 
+                     alt="<%= vehicle.title %>" 
+                     class="w-full h-full object-cover">
+              <% else %>
+                <div class="w-full h-full flex items-center justify-center">
+                  <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                  </svg>
+                </div>
+              <% end %>
+              
+              <!-- 상태 배지 -->
+              <div class="absolute top-4 right-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
+                  <%= vehicle.pending? ? 'bg-yellow-100 text-yellow-800' : 
+                      vehicle.active? ? 'bg-blue-100 text-blue-800' : 
+                      vehicle.sold? ? 'bg-red-100 text-red-800' : 
+                      'bg-gray-100 text-gray-800' %>">
+                  <%= vehicle.pending? ? '승인 대기' : 
+                      vehicle.active? ? '승인 완료' : 
+                      vehicle.sold? ? '판매 완료' : 
+                      vehicle.rejected? ? '승인 거부' : vehicle.status %>
+                </span>
+              </div>
+            </div>
+
+            <!-- 차량 정보 -->
+            <div class="p-6 flex flex-col flex-1">
+              <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2"><%= vehicle.title %></h3>
+              <div class="flex items-center text-sm text-gray-600 mb-4">
+                <span><%= vehicle.brand %></span>
+                <span class="mx-2">•</span>
+                <span><%= vehicle.year %>년</span>
+                <span class="mx-2">•</span>
+                <span><%= format_number(vehicle.mileage) %>km</span>
+              </div>
+
+              <!-- 가격 -->
+              <div class="mb-4">
+                <div class="text-2xl font-bold text-blue-600 mb-2"><%= format_price(vehicle.starting_price) %></div>
+                <div class="h-5">
+                  <% if vehicle.reserve_price.present? %>
+                    <div class="text-sm text-gray-600">희망가: <span class="font-medium"><%= format_price(vehicle.reserve_price) %></span></div>
+                  <% end %>
+                </div>
+              </div>
+
+              <!-- 연료 정보 -->
+              <div class="mb-6 p-3 bg-gray-50 rounded-lg">
+                <div class="text-sm text-gray-600">연료 타입</div>
+                <div class="font-medium text-gray-900">
+                  <%= vehicle.gasoline? ? '가솔린' : 
+                      vehicle.diesel? ? '디젤' : 
+                      vehicle.hybrid? ? '하이브리드' : 
+                      vehicle.electric? ? '전기' : vehicle.fuel_type %>
+                </div>
+              </div>
+
+              <!-- 액션 버튼 영역 -->
+              <div class="mt-auto space-y-3">
+                <%= link_to "상세보기", vehicle_path(vehicle), 
+                    class: "block w-full text-center bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200" %>
+                
+                <% if vehicle.has_active_auction? %>
+                  <%= link_to "경매 관리", auction_path(vehicle.current_auction), 
+                      class: "block w-full text-center bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-200" %>
+                <% elsif vehicle.active? %>
+                  <%= link_to "경매 개설", new_auction_path(vehicle_id: vehicle.id), 
+                      class: "block w-full text-center bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition-colors duration-200" %>
+                <% elsif vehicle.pending? %>
+                  <div class="block w-full text-center bg-yellow-100 text-yellow-700 py-3 px-4 rounded-lg font-semibold">
+                    승인 대기중
+                  </div>
+                <% elsif vehicle.rejected? %>
+                  <div class="block w-full text-center bg-red-100 text-red-700 py-3 px-4 rounded-lg font-semibold">
+                    승인 거부됨
+                  </div>
+                <% elsif vehicle.sold? %>
+                  <div class="block w-full text-center bg-blue-100 text-blue-700 py-3 px-4 rounded-lg font-semibold">
+                    판매 완료
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- 페이지네이션 -->
+      <% if @vehicles.respond_to?(:current_page) %>
+        <div class="mt-12 flex justify-center">
+          <%= paginate @vehicles %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="text-center py-16">
+        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">등록된 차량이 없습니다</h3>
+        <p class="text-gray-600 mb-6">첫 번째 차량을 등록해보세요!</p>
+        <div class="mt-6">
+          <%= link_to "첫 번째 차량 등록하기", new_vehicle_path, 
+              class: "inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors duration-200" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

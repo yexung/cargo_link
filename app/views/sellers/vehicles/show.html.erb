@@ -1,0 +1,143 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900"><%= @vehicle.title %></h1>
+          <p class="mt-2 text-gray-600">차량 상세 정보</p>
+        </div>
+        <div class="flex space-x-3">
+          <%= link_to "수정", edit_sellers_vehicle_path(@vehicle), class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+          <%= link_to "경매 등록", new_sellers_auction_path(vehicle_id: @vehicle.id), class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vehicle Details -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <!-- Images -->
+      <% if @vehicle.images.attached? && @vehicle.images.any? %>
+        <div class="aspect-w-16 aspect-h-9 bg-gray-200">
+          <%= image_tag rails_blob_path(@vehicle.images.first, only_path: true), class: "w-full h-96 object-cover" %>
+        </div>
+      <% else %>
+        <div class="w-full h-96 bg-gray-300 flex items-center justify-center">
+          <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z"/>
+          </svg>
+        </div>
+      <% end %>
+
+      <!-- Info -->
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Basic Info -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-medium text-gray-900">기본 정보</h3>
+            
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600">제조사:</span>
+                <span class="font-medium"><%= @vehicle.brand %></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">모델:</span>
+                <span class="font-medium"><%= @vehicle.model %></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">연식:</span>
+                <span class="font-medium"><%= @vehicle.year %>년</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">주행거리:</span>
+                <span class="font-medium"><%= number_with_delimiter(@vehicle.mileage) %>km</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">연료:</span>
+                <span class="font-medium">
+                  <%= case @vehicle.fuel_type
+                      when 'gasoline' then '가솔린'
+                      when 'diesel' then '디젤'
+                      when 'hybrid' then '하이브리드'
+                      when 'electric' then '전기'
+                      when 'lpg' then 'LPG'
+                      else @vehicle.fuel_type
+                      end %>
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">변속기:</span>
+                <span class="font-medium">
+                  <%= case @vehicle.transmission
+                      when 'automatic' then '자동'
+                      when 'manual' then '수동'
+                      when 'cvt' then 'CVT'
+                      else @vehicle.transmission
+                      end %>
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">색상:</span>
+                <span class="font-medium"><%= @vehicle.color %></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price & Status -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-medium text-gray-900">가격 및 상태</h3>
+            
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600">시작 가격:</span>
+                <span class="font-medium text-blue-600">₩<%= number_with_delimiter(@vehicle.starting_price) %></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">위치:</span>
+                <span class="font-medium"><%= @vehicle.location %></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">상태:</span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                  <%= @vehicle.active? ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+                  <%= @vehicle.active? ? '활성' : '대기중' %>
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">등록일:</span>
+                <span class="font-medium"><%= @vehicle.created_at.strftime("%Y년 %m월 %d일") %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <% if @vehicle.description.present? %>
+          <div class="mt-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">상세 설명</h3>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <p class="text-gray-700 whitespace-pre-wrap"><%= @vehicle.description %></p>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Actions -->
+        <div class="mt-8 flex justify-between">
+          <%= link_to "목록으로", sellers_dashboard_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+          
+          <div class="flex space-x-3">
+            <%= link_to "수정", edit_sellers_vehicle_path(@vehicle), class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+            <%= link_to "삭제", sellers_vehicle_path(@vehicle), 
+                method: :delete, 
+                data: { 
+                  confirm: "정말 삭제하시겠습니까?",
+                  turbo_confirm: "정말 삭제하시겠습니까?"
+                },
+                class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

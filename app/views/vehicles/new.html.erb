@@ -1,0 +1,228 @@
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 py-12 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+      <div class="flex justify-center mb-4">
+        <div class="bg-purple-600 rounded-full p-3 shadow-lg">
+          <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12a2 2 0 004 0m0 0a2 2 0 104 0 4 4 0 11-8 0zm5 5v1a3 3 0 01-6 0v-1m6 0V9a3 3 0 00-6 0v7.5m6-7.5h.5a2 2 0 11-3 0h2.5z" />
+          </svg>
+        </div>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">경매용 차량 등록</h1>
+      <p class="text-gray-600">경매에 올릴 차량을 등록합니다 (관리자 승인 후 경매 개설 가능)</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+
+      <%= form_with(model: @vehicle, local: true, multipart: true, html: { class: "space-y-6" }) do |form| %>
+        <% if @vehicle.errors.any? %>
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-semibold text-red-800">
+                  <%= pluralize(@vehicle.errors.count, "개의 오류") %>가 발생했습니다
+                </h3>
+                <div class="mt-2 text-sm text-red-700">
+                  <ul class="list-disc pl-5 space-y-1">
+                    <% @vehicle.errors.full_messages.each do |message| %>
+                      <li><%= message %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- 차량 기본 정보 -->
+          <div class="md:col-span-2">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">차량 정보</h3>
+          </div>
+          
+          <div>
+            <%= form.label :title, "차량명", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.text_field :title,
+                class: "appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors",
+                placeholder: "예: 2020년 현대 아반떼 1.6 가솔린" %>
+          </div>
+
+          <div>
+            <%= form.label :brand, "브랜드", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.select :brand, 
+                options_for_select([
+                  ['현대', '현대'],
+                  ['기아', '기아'],
+                  ['삼성', '삼성'],
+                  ['쌍용', '쌍용'],
+                  ['르노삼성', '르노삼성'],
+                  ['BMW', 'BMW'],
+                  ['벤츠', '벤츠'],
+                  ['아우디', '아우디'],
+                  ['폭스바겐', '폭스바겐'],
+                  ['미니', '미니'],
+                  ['토요타', '토요타'],
+                  ['혼다', '혼다'],
+                  ['닛산', '닛산'],
+                  ['인피니티', '인피니티'],
+                  ['렉서스', '렉서스'],
+                  ['마쯔다', '마쯔다'],
+                  ['스바루', '스바루'],
+                  ['포드', '포드'],
+                  ['쉐보레', '쉐보레'],
+                  ['지프', '지프'],
+                  ['테슬라', '테슬라'],
+                  ['볼보', '볼보'],
+                  ['재규어', '재규어'],
+                  ['랜드로버', '랜드로버'],
+                  ['포르쉐', '포르쉐'],
+                  ['페라리', '페라리'],
+                  ['람보르기니', '람보르기니'],
+                  ['벤틀리', '벤틀리'],
+                  ['롤스로이스', '롤스로이스'],
+                  ['맥라렌', '맥라렌'],
+                  ['기타', '기타']
+                ], @vehicle.brand),
+                { prompt: '브랜드를 선택하세요' },
+                { class: "appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" } %>
+          </div>
+
+          <div>
+            <%= form.label :model, "모델", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.text_field :model,
+                class: "appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors",
+                placeholder: "아반떼" %>
+          </div>
+
+          <div>
+            <%= form.label :year, "연식", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.number_field :year,
+                class: "appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors",
+                placeholder: "2020",
+                min: 1990,
+                max: Date.current.year + 1 %>
+          </div>
+
+          <div>
+            <%= form.label :mileage, "주행거리 (km)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.number_field :mileage,
+                class: "appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors",
+                placeholder: "50000",
+                min: 0 %>
+          </div>
+
+          <div>
+            <%= form.label :fuel_type, "연료 타입", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.select :fuel_type,
+                options_for_select([
+                  ['가솔린', 'gasoline'],
+                  ['디젤', 'diesel'],
+                  ['하이브리드', 'hybrid'],
+                  ['전기', 'electric'],
+                  ['LPG', 'lpg'],
+                  ['수소', 'hydrogen'],
+                  ['CNG', 'cng'],
+                  ['기타', 'other']
+                ], @vehicle.fuel_type),
+                { prompt: '연료 타입을 선택하세요' },
+                { class: "appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" } %>
+          </div>
+
+          <div>
+            <%= form.label :transmission, "변속기", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.select :transmission,
+                options_for_select([
+                  ['자동', 'automatic'],
+                  ['수동', 'manual'],
+                  ['CVT', 'cvt']
+                ], @vehicle.transmission),
+                { prompt: '변속기를 선택하세요' },
+                { class: "appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" } %>
+          </div>
+
+          <div class="md:col-span-2">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 mt-6">경매 정보</h3>
+          </div>
+
+          <div>
+            <%= form.label :starting_price, "시작가 (원)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.number_field :starting_price, 
+                class: "appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors",
+                placeholder: "1000000",
+                min: 0,
+                step: 10000 %>
+          </div>
+
+          <div>
+            <%= form.label :reserve_price, "희망가 (원)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.number_field :reserve_price, 
+                class: "appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors",
+                placeholder: "25000000",
+                min: 0,
+                step: 10000 %>
+          </div>
+
+          <!-- 상세 설명 -->
+          <div class="md:col-span-2">
+            <%= form.label :description, "상세 설명", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.text_area :description, rows: 6,
+                class: "appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors resize-none",
+                placeholder: "차량 상태, 특이사항, 옵션 등을 자세히 설명해주세요..." %>
+          </div>
+
+          <!-- 차량 사진 -->
+          <div class="md:col-span-2">
+            <%= form.label :images, "차량 사진", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.file_field :images, multiple: true, accept: "image/*",
+                class: "appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" %>
+            <p class="mt-2 text-sm text-gray-500">여러 장의 사진을 업로드할 수 있습니다. (JPG, PNG 권장)</p>
+          </div>
+        </div>
+
+        <!-- 안내사항 -->
+        <div class="bg-purple-50 border border-purple-200 rounded-lg p-6 mt-8">
+          <h3 class="text-lg font-semibold text-purple-800 mb-4">경매 등록 안내사항</h3>
+          <ul class="space-y-2 text-sm text-purple-700">
+            <li class="flex items-start">
+              <svg class="h-5 w-5 text-purple-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              차량 등록 후 관리자 승인을 거쳐 경매가 시작됩니다
+            </li>
+            <li class="flex items-start">
+              <svg class="h-5 w-5 text-purple-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              정확한 차량 정보와 상태를 기재해주세요
+            </li>
+            <li class="flex items-start">
+              <svg class="h-5 w-5 text-purple-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              선명한 차량 사진을 여러 장 업로드하시면 입찰률이 높아집니다
+            </li>
+            <li class="flex items-start">
+              <svg class="h-5 w-5 text-purple-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              경매 낙찰 시 플랫폼 수수료가 적용됩니다
+            </li>
+          </ul>
+        </div>
+
+        <!-- 제출 버튼 -->
+        <div class="flex justify-end space-x-4 pt-6">
+          <%= link_to "취소", vehicles_path, 
+              class: "px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors" %>
+          <%= form.submit "차량 등록",
+              class: "px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors duration-200 shadow-lg border border-purple-600" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

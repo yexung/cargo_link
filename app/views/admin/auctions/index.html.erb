@@ -1,0 +1,235 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">경매 관리</h1>
+          <p class="mt-2 text-gray-600">시스템의 모든 경매를 관리합니다</p>
+        </div>
+        <%= link_to "대시보드", admin_root_path, 
+            class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-200">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">전체 경매</dt>
+                <dd class="text-lg font-semibold text-gray-900"><%= Auction.count %></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-200">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">진행 중</dt>
+                <dd class="text-lg font-semibold text-gray-900"><%= Auction.active.count %></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-200">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">예정</dt>
+                <dd class="text-lg font-semibold text-gray-900"><%= Auction.upcoming.count %></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-200">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">종료</dt>
+                <dd class="text-lg font-semibold text-gray-900"><%= Auction.ended.count %></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+      <%= form_with url: admin_auctions_path, method: :get, local: true, class: "space-y-4" do |form| %>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <%= form.text_field :search, placeholder: "차량명, 브랜드 검색...", 
+                value: params[:search],
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+          </div>
+          <div>
+            <%= form.select :status, options_for_select([
+                  ['전체 상태', ''],
+                  ['진행 중', 'active'],
+                  ['예정', 'upcoming'],
+                  ['종료', 'ended'],
+                  ['결제 완료', 'paid'],
+                  ['완료', 'completed']
+                ], params[:status]), {}, 
+                { class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" } %>
+          </div>
+          <div>
+            <%= form.submit "검색", class: "w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Auctions Table -->
+    <div class="bg-white shadow rounded-lg border border-gray-200">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">경매 목록</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                차량 정보
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                가격 정보
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                상태
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                입찰 정보
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                일정
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                액션
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% if @auctions.any? %>
+              <% @auctions.each do |auction| %>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div>
+                        <div class="text-sm font-medium text-gray-900">
+                          <%= auction.vehicle.title %>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                          <%= auction.vehicle.brand %> <%= auction.vehicle.model %> (<%= auction.vehicle.year %>년)
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">
+                      시작가: <%= format_price(auction.vehicle.starting_price) %>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                      현재가: <%= format_price(auction.current_price) %>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                      <%= case auction.status
+                          when 'active' then 'bg-green-100 text-green-800'
+                          when 'upcoming' then 'bg-yellow-100 text-yellow-800'
+                          when 'ended' then 'bg-red-100 text-red-800'
+                          when 'paid' then 'bg-blue-100 text-blue-800'
+                          when 'completed' then 'bg-purple-100 text-purple-800'
+                          else 'bg-gray-100 text-gray-800'
+                          end %>">
+                      <%= case auction.status
+                          when 'active' then '진행 중'
+                          when 'upcoming' then '예정'
+                          when 'ended' then '종료'
+                          when 'paid' then '결제 완료'
+                          when 'completed' then '완료'
+                          else auction.status
+                          end %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <div>입찰 수: <%= auction.bids.count %></div>
+                    <% if auction.winner.present? %>
+                      <div class="text-sm text-gray-500">
+                        낙찰자: <%= auction.winner.name %>
+                      </div>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <div>시작: <%= auction.start_time.strftime("%m/%d %H:%M") %></div>
+                    <div>종료: <%= auction.end_time.strftime("%m/%d %H:%M") %></div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <%= link_to "상세보기", admin_auction_path(auction), 
+                        class: "text-blue-600 hover:text-blue-900" %>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
+                  경매가 없습니다.
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <% if @auctions.respond_to?(:current_page) %>
+      <div class="mt-8 flex justify-center">
+        <%= paginate @auctions %>
+      </div>
+    <% end %>
+  </div>
+</div>

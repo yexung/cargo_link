@@ -1,0 +1,146 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">사용자 상세 정보</h1>
+          <p class="mt-2 text-gray-600">
+            <%= params[:type] == 'seller' ? '판매자' : '구매자' %> 정보를 확인하고 관리할 수 있습니다.
+          </p>
+        </div>
+        <div class="flex space-x-3">
+          <%= link_to "목록으로", admin_users_path, 
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+          <%= link_to "편집", edit_admin_user_path(@user, type: params[:type]), 
+              class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Info Card -->
+    <div class="bg-white shadow rounded-lg mb-6">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">기본 정보</h3>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-500">이름</label>
+            <p class="mt-1 text-sm text-gray-900"><%= @user.name %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-500">이메일</label>
+            <p class="mt-1 text-sm text-gray-900"><%= @user.email %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-500">전화번호</label>
+            <p class="mt-1 text-sm text-gray-900"><%= @user.phone %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-500">승인 상태</label>
+            <p class="mt-1">
+              <% if @user.approved? %>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  승인됨
+                </span>
+              <% else %>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                  승인 대기
+                </span>
+              <% end %>
+            </p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-500">가입일</label>
+            <p class="mt-1 text-sm text-gray-900"><%= @user.created_at.strftime('%Y-%m-%d %H:%M') %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-500">최근 수정일</label>
+            <p class="mt-1 text-sm text-gray-900"><%= @user.updated_at.strftime('%Y-%m-%d %H:%M') %></p>
+          </div>
+        </div>
+
+        <!-- 추가 정보 (판매자만) -->
+        <% if params[:type] == 'seller' && @user.respond_to?(:company_name) %>
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <h4 class="text-md font-medium text-gray-900 mb-4">판매자 추가 정보</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <% if @user.company_name.present? %>
+                <div>
+                  <label class="block text-sm font-medium text-gray-500">회사명</label>
+                  <p class="mt-1 text-sm text-gray-900"><%= @user.company_name %></p>
+                </div>
+              <% end %>
+              <% if @user.respond_to?(:business_registration_number) && @user.business_registration_number.present? %>
+                <div>
+                  <label class="block text-sm font-medium text-gray-500">사업자 등록번호</label>
+                  <p class="mt-1 text-sm text-gray-900"><%= @user.business_registration_number %></p>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- 추가 정보 (구매자만) -->
+        <% if params[:type] == 'buyer' && @user.respond_to?(:country) %>
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <h4 class="text-md font-medium text-gray-900 mb-4">구매자 추가 정보</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <% if @user.country.present? %>
+                <div>
+                  <label class="block text-sm font-medium text-gray-500">국가</label>
+                  <p class="mt-1 text-sm text-gray-900"><%= @user.country %></p>
+                </div>
+              <% end %>
+              <% if @user.respond_to?(:city) && @user.city.present? %>
+                <div>
+                  <label class="block text-sm font-medium text-gray-500">도시</label>
+                  <p class="mt-1 text-sm text-gray-900"><%= @user.city %></p>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 활동 정보 -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">활동 정보</h3>
+      </div>
+      <div class="p-6">
+        <% if params[:type] == 'seller' %>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-500">등록한 차량 수</label>
+              <p class="mt-1 text-2xl font-semibold text-gray-900"><%= @user.vehicles.count %></p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-500">진행 중인 경매</label>
+              <p class="mt-1 text-2xl font-semibold text-gray-900"><%= @user.auctions.active.count %></p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-500">완료된 경매</label>
+              <p class="mt-1 text-2xl font-semibold text-gray-900"><%= @user.auctions.ended.count %></p>
+            </div>
+          </div>
+        <% elsif params[:type] == 'buyer' %>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-500">총 입찰 수</label>
+              <p class="mt-1 text-2xl font-semibold text-gray-900"><%= @user.bids.count %></p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-500">낙찰 성공</label>
+              <p class="mt-1 text-2xl font-semibold text-gray-900">
+                <%= Auction.where(winner: @user).count %>
+              </p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

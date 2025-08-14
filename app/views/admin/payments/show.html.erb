@@ -1,0 +1,223 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">결제 상세 정보</h1>
+          <p class="mt-2 text-sm text-gray-600">결제 ID: <%= @payment.id %></p>
+        </div>
+        <div class="flex space-x-3">
+          <%= link_to "목록으로", admin_payments_path, 
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- 차량 정보 -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-lg font-medium text-gray-900 mb-4">차량 정보</h2>
+        <div class="space-y-3">
+          <div class="flex justify-between">
+            <span class="text-gray-600">차량명:</span>
+            <span class="font-semibold"><%= @payment.vehicle.display_title %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">브랜드:</span>
+            <span class="font-semibold"><%= @payment.vehicle.brand %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">연식:</span>
+            <span class="font-semibold"><%= @payment.vehicle.year %>년</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">주행거리:</span>
+            <span class="font-semibold"><%= format_number(@payment.vehicle.mileage) %>km</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">연료:</span>
+            <span class="font-semibold">
+              <%= case @payment.vehicle.fuel_type
+                  when 'gasoline' then '휘발유'
+                  when 'diesel' then '경유'
+                  when 'hybrid' then '하이브리드'
+                  when 'electric' then '전기'
+                  else @payment.vehicle.fuel_type
+                  end %>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 구매자 정보 -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-lg font-medium text-gray-900 mb-4">구매자 정보</h2>
+        <div class="space-y-3">
+          <div class="flex justify-between">
+            <span class="text-gray-600">이름:</span>
+            <span class="font-semibold"><%= @payment.buyer.name %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">이메일:</span>
+            <span class="font-semibold"><%= @payment.buyer.email %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">전화번호:</span>
+            <span class="font-semibold"><%= @payment.buyer.phone || '미등록' %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">승인 상태:</span>
+            <span class="<%= @payment.buyer.approved? ? 'text-green-600' : 'text-red-600' %> font-semibold">
+              <%= @payment.buyer.approved? ? '승인됨' : '미승인' %>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 판매자 정보 -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-lg font-medium text-gray-900 mb-4">판매자 정보</h2>
+        <div class="space-y-3">
+          <div class="flex justify-between">
+            <span class="text-gray-600">이름:</span>
+            <span class="font-semibold"><%= @payment.seller.name %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">이메일:</span>
+            <span class="font-semibold"><%= @payment.seller.email %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">전화번호:</span>
+            <span class="font-semibold"><%= @payment.seller.phone || '미등록' %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">승인 상태:</span>
+            <span class="<%= @payment.seller.approved? ? 'text-green-600' : 'text-red-600' %> font-semibold">
+              <%= @payment.seller.approved? ? '승인됨' : '미승인' %>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 결제 정보 -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-lg font-medium text-gray-900 mb-4">결제 정보</h2>
+        <div class="space-y-3">
+          <div class="flex justify-between">
+            <span class="text-gray-600">차량 가격:</span>
+            <span class="font-semibold"><%= format_price(@payment.vehicle_price) %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">플랫폼 수수료 (<%= @payment.commission_rate %>%):</span>
+            <span class="font-semibold"><%= @payment.formatted_commission_amount %></span>
+          </div>
+          <div class="flex justify-between border-t pt-3">
+            <span class="text-gray-900 font-medium">총 결제 금액:</span>
+            <span class="text-lg font-bold text-blue-600"><%= @payment.formatted_total_amount %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">판매자 수령액:</span>
+            <span class="font-semibold text-green-600"><%= @payment.formatted_seller_amount %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 입금 정보 -->
+    <% if @payment.bank_name.present? %>
+      <div class="mt-8 bg-white shadow rounded-lg p-6">
+        <h2 class="text-lg font-medium text-gray-900 mb-4">입금 정보</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-gray-600">입금 은행:</span>
+              <span class="font-semibold"><%= @payment.bank_name %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">입금 계좌:</span>
+              <span class="font-semibold"><%= @payment.account_number %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">입금자명:</span>
+              <span class="font-semibold"><%= @payment.depositor_name %></span>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-gray-600">입금 일시:</span>
+              <span class="font-semibold">
+                <%= @payment.deposit_datetime&.strftime('%Y년 %m월 %d일 %H:%M') || '미입력' %>
+              </span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">생성일:</span>
+              <span class="font-semibold"><%= @payment.created_at.strftime('%Y년 %m월 %d일 %H:%M') %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">수정일:</span>
+              <span class="font-semibold"><%= @payment.updated_at.strftime('%Y년 %m월 %d일 %H:%M') %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- 상태 및 작업 -->
+    <div class="mt-8 bg-white shadow rounded-lg p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-medium text-gray-900">결제 상태</h2>
+          <div class="mt-2">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+              <%= case @payment.status
+                  when 'pending'
+                    'bg-yellow-100 text-yellow-800'
+                  when 'reported'
+                    'bg-blue-100 text-blue-800'
+                  when 'confirmed'
+                    'bg-green-100 text-green-800'
+                  when 'rejected'
+                    'bg-red-100 text-red-800'
+                  else
+                    'bg-gray-100 text-gray-800'
+                  end %>">
+              <%= case @payment.status
+                  when 'pending' then '입금 대기'
+                  when 'reported' then '입금 신고됨'
+                  when 'confirmed' then '결제 완료'
+                  when 'rejected' then '결제 거부'
+                  else @payment.status
+                  end %>
+            </span>
+          </div>
+        </div>
+
+        <% if @payment.status == 'reported' %>
+          <div class="flex space-x-3">
+            <%= form_with url: reject_admin_payment_path(@payment), method: :patch, local: true, class: "inline" do |form| %>
+              <%= form.text_field :admin_memo, placeholder: "거부 사유", class: "mr-2 px-3 py-2 border border-gray-300 rounded-md text-sm" %>
+              <%= form.submit "거부", 
+                  class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500",
+                  data: { confirm: "정말로 이 결제를 거부하시겠습니까?" } %>
+            <% end %>
+
+            <%= form_with url: confirm_admin_payment_path(@payment), method: :patch, local: true, class: "inline" do |form| %>
+              <%= form.text_field :admin_memo, placeholder: "승인 메모 (선택사항)", class: "mr-2 px-3 py-2 border border-gray-300 rounded-md text-sm" %>
+              <%= form.submit "승인", 
+                  class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500",
+                  data: { confirm: "정말로 이 결제를 승인하시겠습니까?" } %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <% if @payment.admin_memo.present? %>
+        <div class="mt-4 p-4 bg-gray-50 rounded-md">
+          <h3 class="text-sm font-medium text-gray-900">관리자 메모</h3>
+          <p class="mt-1 text-sm text-gray-600"><%= @payment.admin_memo %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div> 

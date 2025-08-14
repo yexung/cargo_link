@@ -1,0 +1,164 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">차량 상세 정보</h1>
+          <p class="mt-2 text-gray-600">차량 정보를 확인하고 관리하세요</p>
+        </div>
+        <div class="flex space-x-4">
+          <%= link_to "목록으로 돌아가기", admin_vehicles_path, 
+              class: "bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200" %>
+          <% if @vehicle.status == 'pending' %>
+                      <%= button_to "승인", approve_admin_vehicle_path(@vehicle), 
+              method: :patch,
+              data: { confirm: '이 차량을 승인하시겠습니까?' },
+              class: "bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200" %>
+          <%= button_to "거부", reject_admin_vehicle_path(@vehicle), 
+              method: :patch,
+              data: { confirm: '이 차량을 거부하시겠습니까?' },
+              class: "bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-200" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vehicle Details -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <!-- Status Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-semibold text-gray-900">
+            <%= @vehicle.display_title %>
+          </h2>
+          <div>
+            <% case @vehicle.status %>
+            <% when 'pending' %>
+              <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                대기 중
+              </span>
+            <% when 'active' %>
+              <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">
+                승인됨
+              </span>
+            <% when 'rejected' %>
+              <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">
+                거부됨
+              </span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Vehicle Information -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">차량 정보</h3>
+            <dl class="space-y-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">제조사</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @vehicle.brand %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">모델</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @vehicle.model %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">연도</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @vehicle.year %>년</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">주행거리</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= format_number(@vehicle.mileage) %>km</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">가격</dt>
+                <dd class="mt-1 text-lg font-semibold text-gray-900"><%= @vehicle.formatted_price %></dd>
+              </div>
+
+              <div>
+                <dt class="text-sm font-medium text-gray-500">연료 타입</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @vehicle.fuel_type %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">변속기</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @vehicle.transmission %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">등록일</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @vehicle.created_at.strftime('%Y년 %m월 %d일') %></dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Seller Information -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">판매자 정보</h3>
+            <dl class="space-y-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">이름</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @vehicle.seller.name %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">이메일</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @vehicle.seller.email %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">회사명</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @vehicle.seller.company_name %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">전화번호</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @vehicle.seller.phone %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">사업자등록번호</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @vehicle.seller.business_registration_number %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">승인 상태</dt>
+                <dd class="mt-1">
+                  <% if @vehicle.seller.approved? %>
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                      승인됨
+                    </span>
+                  <% else %>
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                      대기 중
+                    </span>
+                  <% end %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <% if @vehicle.description.present? %>
+          <div class="mt-8 pt-6 border-t border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">차량 설명</h3>
+            <div class="prose max-w-none">
+              <p class="text-sm text-gray-700 whitespace-pre-wrap"><%= @vehicle.description %></p>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Images -->
+        <% if @vehicle.images.attached? %>
+          <div class="mt-8 pt-6 border-t border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">차량 이미지</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <% @vehicle.images.each do |image| %>
+                <div class="aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg overflow-hidden">
+                  <%= image_tag image, class: "w-full h-full object-cover" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div> 

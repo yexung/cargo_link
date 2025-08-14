@@ -1,0 +1,203 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">P2P 직거래</h1>
+        <p class="mt-2 text-gray-600">개인 간 직접 거래로 더 유연한 중고차 거래를 경험하세요</p>
+      </div>
+      <% if seller_signed_in? %>
+        <a href="<%= new_trade_path %>" class="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition-colors duration-200 font-semibold">
+          P2P 거래 등록
+        </a>
+      <% else %>
+        <a href="<%= new_seller_session_path %>" class="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition-colors duration-200 font-semibold">
+          판매자 로그인
+        </a>
+      <% end %>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+      <%= form_with url: trades_path, method: :get, local: true, class: "space-y-4" do |form| %>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <!-- Search -->
+          <div class="lg:col-span-2">
+            <%= form.text_field :search, placeholder: "차량명, 브랜드, 모델 검색...", 
+                value: params[:search],
+                class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200" %>
+          </div>
+          
+          <!-- Brand Filter -->
+          <div>
+            <%= form.select :brand, options_for_select([
+                  ['모든 브랜드', ''],
+                  ['현대', '현대'],
+                  ['기아', '기아'],
+                  ['삼성', '삼성'],
+                  ['쌍용', '쌍용'],
+                  ['르노삼성', '르노삼성'],
+                  ['BMW', 'BMW'],
+                  ['벤츠', '벤츠'],
+                  ['아우디', '아우디'],
+                  ['폭스바겐', '폭스바겐'],
+                  ['미니', '미니'],
+                  ['토요타', '토요타'],
+                  ['혼다', '혼다'],
+                  ['닛산', '닛산'],
+                  ['인피니티', '인피니티'],
+                  ['렉서스', '렉서스'],
+                  ['마쯔다', '마쯔다'],
+                  ['스바루', '스바루'],
+                  ['포드', '포드'],
+                  ['쉐보레', '쉐보레'],
+                  ['지프', '지프'],
+                  ['테슬라', '테슬라'],
+                  ['볼보', '볼보'],
+                  ['재규어', '재규어'],
+                  ['랜드로버', '랜드로버'],
+                  ['포르쉐', '포르쉐'],
+                  ['페라리', '페라리'],
+                  ['람보르기니', '람보르기니'],
+                  ['벤틀리', '벤틀리'],
+                  ['롤스로이스', '롤스로이스'],
+                  ['맥라렌', '맥라렌'],
+                  ['기타', '기타']
+                ], params[:brand]),
+                {}, { class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200" } %>
+          </div>
+          
+          <!-- Fuel Type Filter -->
+          <div>
+            <%= form.select :fuel_type, options_for_select([
+                  ['모든 연료', ''],
+                  ['가솔린', 'gasoline'],
+                  ['디젤', 'diesel'],
+                  ['하이브리드', 'hybrid'],
+                  ['전기', 'electric'],
+                  ['LPG', 'lpg'],
+                  ['수소', 'hydrogen'],
+                  ['CNG', 'cng'],
+                  ['기타', 'other']
+                ], params[:fuel_type]),
+                {}, { class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200" } %>
+          </div>
+          
+          <!-- Search Button -->
+          <div>
+            <%= form.submit "검색", class: "w-full bg-green-600 text-white py-3 px-6 rounded-xl hover:bg-green-700 transition-colors duration-200 font-semibold" %>
+          </div>
+        </div>
+        
+        <!-- Price Range -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <%= form.number_field :min_price, placeholder: "최소 가격", 
+                value: params[:min_price],
+                class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200" %>
+          </div>
+          <div>
+            <%= form.number_field :max_price, placeholder: "최대 가격", 
+                value: params[:max_price],
+                class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Trade Results -->
+    <% if @trades.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% @trades.each do |trade| %>
+          <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+            <!-- Trade Image -->
+            <div class="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300">
+              <% if trade.images.attached? && trade.images.any? %>
+                <%= image_tag rails_blob_path(trade.images.first, only_path: true), class: "w-full h-full object-cover" %>
+              <% else %>
+                <div class="w-full h-full flex items-center justify-center">
+                  <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                  </svg>
+                </div>
+              <% end %>
+              <!-- Status Badge -->
+              <div class="absolute top-4 right-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <%= trade.status == 'active' ? '거래 가능' : '거래 완료' %>
+                </span>
+              </div>
+            </div>
+            
+            <!-- Trade Info -->
+            <div class="p-6">
+              <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2"><%= trade.title %></h3>
+              <div class="flex items-center text-sm text-gray-600 mb-4">
+                <span><%= trade.brand %> <%= trade.model %></span>
+                <span class="mx-2">•</span>
+                <span><%= trade.year %>년</span>
+                <span class="mx-2">•</span>
+                <span><%= format_number(trade.mileage) %>km</span>
+              </div>
+              
+              <!-- Price -->
+              <div class="mb-4">
+                <div class="text-2xl font-bold text-green-600"><%= trade.formatted_price %></div>
+              </div>
+              
+              <!-- Seller Info -->
+              <div class="mb-4 p-3 bg-gray-50 rounded-lg">
+                <div class="text-sm text-gray-600">판매자</div>
+                <div class="font-medium text-gray-900"><%= trade.seller_name %></div>
+              </div>
+              
+              <!-- Description -->
+              <% if trade.description.present? %>
+                <div class="mb-4">
+                  <p class="text-sm text-gray-600 line-clamp-3"><%= trade.description %></p>
+                </div>
+              <% end %>
+              
+              <!-- Action Button -->
+              <a href="<%= trade_path(trade) %>" class="block w-full text-center bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-200">
+                자세히 보기
+              </a>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Pagination -->
+      <% if @trades.respond_to?(:current_page) %>
+        <div class="mt-12 flex justify-center">
+          <%= paginate @trades %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="text-center py-16">
+        <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">등록된 P2P 거래가 없습니다</h3>
+        <p class="text-gray-600 mb-6">첫 번째 P2P 거래를 등록해보세요!</p>
+        <% if seller_signed_in? %>
+          <a href="<%= new_trade_path %>" class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition-colors duration-200">
+            P2P 거래 등록하기
+            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+          </a>
+        <% else %>
+          <a href="<%= new_seller_session_path %>" class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition-colors duration-200">
+            판매자 로그인
+            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+            </svg>
+          </a>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div> 

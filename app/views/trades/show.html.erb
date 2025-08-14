@@ -1,0 +1,302 @@
+<%# P2P 거래 상세 페이지 %>
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- 뒤로 가기 버튼 -->
+    <div class="mb-6">
+      <%= link_to trades_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        목록으로 돌아가기
+      <% end %>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- 거래 정보 섹션 -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div class="p-6">
+            <!-- 거래 제목 및 상태 -->
+            <div class="flex items-start justify-between mb-6">
+              <div>
+                <h1 class="text-2xl font-bold text-gray-900 mb-2"><%= @trade.title %></h1>
+                <div class="flex items-center space-x-4">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                    <%= @trade.status == 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
+                    <%= @trade.status == 'active' ? '거래 가능' : '거래 완료' %>
+                  </span>
+                  <span class="text-sm text-gray-500">
+                    <%= @trade.trade_type == 'direct' ? '직거래' : 'P2P 거래' %>
+                  </span>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-3xl font-bold text-green-600"><%= @trade.formatted_price %></div>
+              </div>
+            </div>
+
+            <!-- 차량 정보 -->
+            <div class="border-t border-gray-200 pt-6 mb-6">
+              <h2 class="text-lg font-semibold text-gray-900 mb-4">차량 정보</h2>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">브랜드</dt>
+                  <dd class="mt-1 text-sm text-gray-900"><%= @trade.brand %></dd>
+                </div>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">모델</dt>
+                  <dd class="mt-1 text-sm text-gray-900"><%= @trade.model %></dd>
+                </div>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">연식</dt>
+                  <dd class="mt-1 text-sm text-gray-900"><%= @trade.year %>년</dd>
+                </div>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">주행거리</dt>
+                  <dd class="mt-1 text-sm text-gray-900"><%= format_number(@trade.mileage) %>km</dd>
+                </div>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">연료</dt>
+                  <dd class="mt-1 text-sm text-gray-900"><%= @trade.fuel_type_korean %></dd>
+                </div>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">변속기</dt>
+                  <dd class="mt-1 text-sm text-gray-900"><%= @trade.transmission_korean %></dd>
+                </div>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">색상</dt>
+                  <dd class="mt-1 text-sm text-gray-900"><%= @trade.color %></dd>
+                </div>
+              </div>
+            </div>
+
+            <!-- 거래 설명 -->
+            <div class="border-t border-gray-200 pt-6">
+              <h2 class="text-lg font-semibold text-gray-900 mb-4">거래 설명</h2>
+              <div class="prose max-w-none text-gray-700">
+                <%= simple_format(@trade.description) %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 차량 이미지 -->
+        <% if @trade.images.any? %>
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 mt-6">
+            <div class="p-6">
+              <h2 class="text-lg font-semibold text-gray-900 mb-4">차량 사진</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <% @trade.images.each_with_index do |image, index| %>
+                  <div class="aspect-w-16 aspect-h-12 bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity" 
+                       onclick="openImageModal(<%= index %>)">
+                    <%= image_tag image, class: "w-full h-48 object-cover" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- 이미지 모달 -->
+        <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-95 hidden" style="z-index: 999999;">
+          <!-- 이미지 -->
+          <div class="flex items-center justify-center w-full h-full p-8">
+            <img id="modalImage" src="" alt="차량 사진" class="max-w-full max-h-full object-contain">
+          </div>
+        </div>
+
+        <!-- 모달 컨트롤 버튼들 (모달과 분리) -->
+        <!-- 닫기 버튼 -->
+        <button id="closeBtn" onclick="closeImageModal()" 
+                class="fixed top-4 right-4 w-12 h-12 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center hidden"
+                style="z-index: 1000000;">
+          <span class="text-2xl font-bold">×</span>
+        </button>
+        
+        <!-- 이전 버튼 -->
+        <button id="prevBtn" onclick="previousImage()" 
+                class="fixed left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center hidden"
+                style="z-index: 1000000;">
+          <span class="text-xl">‹</span>
+        </button>
+        
+        <!-- 다음 버튼 -->
+        <button id="nextBtn" onclick="nextImage()" 
+                class="fixed right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center hidden"
+                style="z-index: 1000000;">
+          <span class="text-xl">›</span>
+        </button>
+        
+        <!-- 이미지 카운터 -->
+        <div id="counterDiv" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-black bg-opacity-70 text-white rounded hidden"
+             style="z-index: 1000000;">
+          <span id="imageCounter">1 / <%= @trade.images.count %></span>
+        </div>
+
+        <script>
+          let currentImageIndex = 0;
+          const images = [
+            <% @trade.images.each do |image| %>
+              "<%= url_for(image) %>",
+            <% end %>
+          ];
+          const totalImages = images.length;
+
+          function openImageModal(index) {
+            currentImageIndex = index;
+            // 모달 표시
+            document.getElementById('imageModal').classList.remove('hidden');
+            // 모든 컨트롤 버튼 표시
+            document.getElementById('closeBtn').classList.remove('hidden');
+            document.getElementById('prevBtn').classList.remove('hidden');
+            document.getElementById('nextBtn').classList.remove('hidden');
+            document.getElementById('counterDiv').classList.remove('hidden');
+            
+            updateModalImage();
+            document.body.style.overflow = 'hidden';
+          }
+
+          function closeImageModal() {
+            // 모달 숨김
+            document.getElementById('imageModal').classList.add('hidden');
+            // 모든 컨트롤 버튼 숨김
+            document.getElementById('closeBtn').classList.add('hidden');
+            document.getElementById('prevBtn').classList.add('hidden');
+            document.getElementById('nextBtn').classList.add('hidden');
+            document.getElementById('counterDiv').classList.add('hidden');
+            
+            document.body.style.overflow = 'auto';
+          }
+
+          function updateModalImage() {
+            const modalImage = document.getElementById('modalImage');
+            const imageCounter = document.getElementById('imageCounter');
+            
+            modalImage.src = images[currentImageIndex];
+            imageCounter.textContent = `${currentImageIndex + 1} / ${totalImages}`;
+            
+            // 버튼 표시/숨김 (이전/다음 버튼만)
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (currentImageIndex > 0) {
+              prevBtn.style.display = 'flex';
+            } else {
+              prevBtn.style.display = 'none';
+            }
+            
+            if (currentImageIndex < totalImages - 1) {
+              nextBtn.style.display = 'flex';
+            } else {
+              nextBtn.style.display = 'none';
+            }
+          }
+
+          function previousImage() {
+            if (currentImageIndex > 0) {
+              currentImageIndex--;
+              updateModalImage();
+            }
+          }
+
+          function nextImage() {
+            if (currentImageIndex < totalImages - 1) {
+              currentImageIndex++;
+              updateModalImage();
+            }
+          }
+
+          // ESC 키로 모달 닫기
+          document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+              closeImageModal();
+            }
+          });
+
+          // 모달 배경 클릭 시 닫기
+          document.getElementById('imageModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+              closeImageModal();
+            }
+          });
+        </script>
+      </div>
+
+      <!-- 판매자 정보 및 연락처 -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+          <div class="p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">판매자 정보</h2>
+            <div class="space-y-3">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">판매자</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @trade.seller.name %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">연락처</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @trade.contact_info %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">거래 지역</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @trade.location %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">등록일</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @trade.created_at.strftime('%Y년 %m월 %d일') %></dd>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 거래 액션 버튼 -->
+        <% if seller_signed_in? && @trade.seller == current_seller %>
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">거래 관리</h3>
+              <div class="space-y-3">
+                <% if @trade.active? %>
+                  <%= form_with url: complete_trade_sellers_trade_path(@trade), method: :patch, local: true, 
+                        data: { confirm: "정말로 이 거래를 완료로 표시하시겠습니까?" } do |form| %>
+                    <%= form.submit "거래 완료", 
+                          class: "w-full bg-green-600 text-white px-4 py-2 rounded-md font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" %>
+                  <% end %>
+                  <%= link_to "수정하기", edit_trade_path(@trade), 
+                        class: "w-full bg-blue-600 text-white px-4 py-2 rounded-md font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 block text-center" %>
+                <% else %>
+                  <div class="w-full bg-gray-100 text-gray-600 px-4 py-2 rounded-md font-medium text-center">
+                    거래 완료됨
+                  </div>
+                <% end %>
+                <%= link_to "삭제하기", trade_path(@trade), 
+                      method: :delete,
+                      data: { confirm: "정말로 이 거래를 삭제하시겠습니까?" },
+                      class: "w-full bg-red-600 text-white px-4 py-2 rounded-md font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 block text-center" %>
+              </div>
+            </div>
+          </div>
+        <% elsif buyer_signed_in? %>
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">연락처 정보</h3>
+              <p class="text-sm text-gray-600 mb-4">판매자에게 직접 연락하여 거래를 진행하세요.</p>
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-sm font-medium text-gray-900">연락처: <%= @trade.contact_info %></p>
+                <p class="text-sm text-gray-600 mt-1">거래 지역: <%= @trade.location %></p>
+              </div>
+            </div>
+          </div>
+        <% else %>
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">거래 문의</h3>
+              <p class="text-sm text-gray-600 mb-4">연락처 정보를 보려면 구매자로 로그인해주세요.</p>
+              <%= link_to "구매자 로그인", new_buyer_session_path, 
+                    class: "w-full bg-green-600 text-white px-4 py-2 rounded-md font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 block text-center" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+</div> 

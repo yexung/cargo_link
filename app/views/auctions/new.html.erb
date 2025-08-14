@@ -1,0 +1,130 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h1 class="text-2xl font-bold text-gray-900">경매 등록</h1>
+        <p class="mt-1 text-gray-600">차량을 경매에 등록합니다</p>
+      </div>
+
+      <%= form_with(model: @auction, local: true, class: "p-6") do |form| %>
+        <% if @auction.errors.any? %>
+          <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
+            <h4 class="font-medium">오류가 발생했습니다:</h4>
+            <ul class="mt-2 list-disc list-inside">
+              <% @auction.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="space-y-6">
+          <!-- 차량 선택 -->
+          <div>
+            <%= form.label :vehicle_id, "경매할 차량", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <% if @vehicles&.any? %>
+              <%= form.select :vehicle_id, 
+                  options_from_collection_for_select(@vehicles, :id, :display_title, @auction.vehicle_id),
+                  { prompt: "차량을 선택하세요" },
+                  { class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" } %>
+            <% else %>
+              <div class="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-md">
+                <p>경매에 등록할 수 있는 차량이 없습니다.</p>
+                <%= link_to "차량 등록하기", new_vehicle_path, class: "text-blue-600 hover:text-blue-800 underline" %>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- 경매 시작 시간 -->
+          <div>
+            <%= form.label :start_time, "경매 시작 시간", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.datetime_local_field :start_time, 
+                value: (@auction.start_time || 1.hour.from_now).strftime("%Y-%m-%dT%H:%M"),
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+            <p class="mt-1 text-sm text-gray-500">경매가 시작될 날짜와 시간을 설정하세요</p>
+          </div>
+
+          <!-- 경매 종료 시간 -->
+          <div>
+            <%= form.label :end_time, "경매 종료 시간", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.datetime_local_field :end_time, 
+                value: (@auction.end_time || 1.day.from_now).strftime("%Y-%m-%dT%H:%M"),
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+            <p class="mt-1 text-sm text-gray-500">경매가 종료될 날짜와 시간을 설정하세요</p>
+          </div>
+
+          <!-- 입찰 단위 -->
+          <div>
+            <%= form.label :increment_amount, "입찰 단위", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.number_field :increment_amount, 
+                value: @auction.increment_amount || 100000,
+                step: 10000,
+                min: 10000,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+            <p class="mt-1 text-sm text-gray-500">입찰할 때마다 증가하는 최소 금액 (원)</p>
+          </div>
+
+          <!-- 희망 가격 (선택사항) -->
+          <div>
+            <%= form.label :reserve_price, "희망 가격 (선택사항)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.number_field :reserve_price, 
+                step: 100000,
+                min: 0,
+                placeholder: "희망하는 최소 낙찰가 (선택사항)",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+            <p class="mt-1 text-sm text-gray-500">이 금액 이하로는 낙찰되지 않습니다 (비공개)</p>
+          </div>
+
+          <!-- 경매 정보 -->
+          <div class="bg-blue-50 border border-blue-200 p-4 rounded-md">
+            <h3 class="font-medium text-blue-900 mb-2">경매 안내사항</h3>
+            <ul class="text-sm text-blue-700 space-y-1">
+              <li>• 경매는 설정한 시간에 자동으로 시작됩니다</li>
+              <li>• 종료 시간 10분 전에 입찰이 있으면 10분 연장됩니다</li>
+              <li>• 입찰 단위는 경매 시작 후 변경할 수 없습니다</li>
+              <li>• 희망 가격은 입찰자에게 공개되지 않습니다</li>
+              <li>• 경매 수수료는 낙찰가의 5%입니다</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 액션 버튼 -->
+        <div class="flex justify-end space-x-3 mt-8 pt-6 border-t border-gray-200">
+          <%= link_to "취소", auctions_path, 
+              class: "px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" %>
+          <%= form.submit "경매 등록", 
+              class: "px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 시작 시간과 종료 시간 유효성 검사
+  document.addEventListener('DOMContentLoaded', function() {
+    const startTimeInput = document.querySelector('input[name="auction[start_time]"]');
+    const endTimeInput = document.querySelector('input[name="auction[end_time]"]');
+    
+    function validateTimes() {
+      const startTime = new Date(startTimeInput.value);
+      const endTime = new Date(endTimeInput.value);
+      const now = new Date();
+      
+      if (startTime <= now) {
+        startTimeInput.setCustomValidity('시작 시간은 현재 시간보다 늦어야 합니다');
+      } else {
+        startTimeInput.setCustomValidity('');
+      }
+      
+      if (endTime <= startTime) {
+        endTimeInput.setCustomValidity('종료 시간은 시작 시간보다 늦어야 합니다');
+      } else {
+        endTimeInput.setCustomValidity('');
+      }
+    }
+    
+    startTimeInput.addEventListener('change', validateTimes);
+    endTimeInput.addEventListener('change', validateTimes);
+  });
+</script>

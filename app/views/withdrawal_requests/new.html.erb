@@ -1,0 +1,116 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- 헤더 -->
+    <div class="mb-8">
+      <%= link_to "← 환전 관리로", withdrawal_requests_path, 
+          class: "text-blue-600 hover:text-blue-800" %>
+      <h1 class="text-3xl font-bold text-gray-900 mt-4">환전 신청</h1>
+      <p class="mt-2 text-gray-600">판매 수익을 환전 신청하세요</p>
+    </div>
+
+    <!-- 잔고 정보 -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <svg class="h-8 w-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-lg font-medium text-blue-900">현재 잔고</h3>
+          <div class="text-3xl font-bold text-blue-600">
+            <%= current_seller.formatted_balance %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 환전 신청 폼 -->
+    <div class="bg-white rounded-lg shadow-sm border p-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-6">환전 신청 정보</h2>
+      
+      <%= form_with model: @withdrawal_request, local: true, class: "space-y-6" do |form| %>
+        <% if @withdrawal_request.errors.any? %>
+          <div class="bg-red-50 border border-red-200 rounded-md p-4">
+            <h3 class="text-sm font-medium text-red-800">다음 오류를 수정해주세요:</h3>
+            <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+              <% @withdrawal_request.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div>
+          <%= form.label :amount, "환전 신청 금액", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.number_field :amount, 
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+              placeholder: "환전할 금액을 입력하세요",
+              max: current_seller.balance,
+              min: 1000,
+              step: 1000 %>
+          <p class="text-sm text-gray-500 mt-1">
+            최소 1,000원부터 최대 <%= current_seller.formatted_balance %>까지 신청 가능합니다.
+          </p>
+        </div>
+
+        <div>
+          <%= form.label :bank_name, "은행명", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.select :bank_name, 
+              options_for_select([
+                ['은행을 선택하세요', ''],
+                ['국민은행', '국민은행'],
+                ['신한은행', '신한은행'],
+                ['우리은행', '우리은행'],
+                ['하나은행', '하나은행'],
+                ['농협은행', '농협은행'],
+                ['기업은행', '기업은행'],
+                ['외환은행', '외환은행'],
+                ['케이뱅크', '케이뱅크'],
+                ['카카오뱅크', '카카오뱅크'],
+                ['토스뱅크', '토스뱅크'],
+                ['새마을금고', '새마을금고'],
+                ['신협', '신협'],
+                ['기타', '기타']
+              ], @withdrawal_request.bank_name),
+              {},
+              { class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" } %>
+        </div>
+
+        <div>
+          <%= form.label :bank_account_number, "계좌번호", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.text_field :bank_account_number, 
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+              placeholder: "계좌번호를 '-' 없이 입력하세요" %>
+        </div>
+
+        <div>
+          <%= form.label :account_holder_name, "예금주명", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.text_field :account_holder_name, 
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+              placeholder: "예금주명을 입력하세요",
+              value: current_seller.name %>
+        </div>
+
+        <!-- 주의사항 -->
+        <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+          <h3 class="text-sm font-medium text-yellow-800">환전 신청 주의사항</h3>
+          <ul class="mt-2 text-sm text-yellow-700 list-disc list-inside">
+            <li>환전 신청 후에는 취소할 수 없습니다</li>
+            <li>관리자 승인 후 3-5 영업일 내에 입금됩니다</li>
+            <li>계좌 정보가 정확하지 않으면 환전이 지연될 수 있습니다</li>
+            <li>환전 수수료는 별도로 부과되지 않습니다</li>
+          </ul>
+        </div>
+
+        <div class="flex justify-end space-x-4">
+          <%= link_to "취소", withdrawal_requests_path, 
+              class: "px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" %>
+          <%= form.submit "환전 신청", 
+              class: "px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700",
+              confirm: "정말로 환전을 신청하시겠습니까?" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

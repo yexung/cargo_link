@@ -1,0 +1,223 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- 헤더 -->
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">진행 중인 경매</h1>
+        <p class="mt-2 text-gray-600">실시간으로 진행되는 중고차 경매에 참여하세요</p>
+      </div>
+    </div>
+
+    <!-- 필터 섹션 -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+      <%= form_with url: auctions_path, method: :get, local: true, class: "space-y-4" do |form| %>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <!-- 검색 -->
+          <div class="lg:col-span-2">
+            <%= form.text_field :q, value: params[:q], placeholder: "차량명, 브랜드 검색...", 
+                class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" %>
+          </div>
+          
+          <!-- 상태 필터 -->
+          <div>
+            <%= form.select :status, options_for_select([
+                  ['전체', ''],
+                  ['진행 중', 'active'],
+                  ['예정', 'upcoming'],
+                  ['종료', 'ended']
+                ], params[:status]), {}, 
+                { class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" } %>
+          </div>
+          
+          <!-- 브랜드 필터 -->
+          <div>
+            <%= form.select :brand, options_for_select([
+                  ['모든 브랜드', ''],
+                  ['현대', '현대'],
+                  ['기아', '기아'],
+                  ['삼성', '삼성'],
+                  ['쌍용', '쌍용'],
+                  ['르노삼성', '르노삼성'],
+                  ['BMW', 'BMW'],
+                  ['벤츠', '벤츠'],
+                  ['아우디', '아우디'],
+                  ['폭스바겐', '폭스바겐'],
+                  ['미니', '미니'],
+                  ['토요타', '토요타'],
+                  ['혼다', '혼다'],
+                  ['닛산', '닛산'],
+                  ['인피니티', '인피니티'],
+                  ['렉서스', '렉서스'],
+                  ['마쯔다', '마쯔다'],
+                  ['스바루', '스바루'],
+                  ['포드', '포드'],
+                  ['쉐보레', '쉐보레'],
+                  ['지프', '지프'],
+                  ['테슬라', '테슬라'],
+                  ['볼보', '볼보'],
+                  ['재규어', '재규어'],
+                  ['랜드로버', '랜드로버'],
+                  ['포르쉐', '포르쉐'],
+                  ['페라리', '페라리'],
+                  ['람보르기니', '람보르기니'],
+                  ['벤틀리', '벤틀리'],
+                  ['롤스로이스', '롤스로이스'],
+                  ['맥라렌', '맥라렌'],
+                  ['기타', '기타']
+                ], params[:brand]), {}, 
+                { class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" } %>
+          </div>
+          
+          <!-- 연료 필터 -->
+          <div>
+            <%= form.select :fuel_type, options_for_select([
+                  ['모든 연료', ''],
+                  ['가솔린', 'gasoline'],
+                  ['디젤', 'diesel'],
+                  ['하이브리드', 'hybrid'],
+                  ['전기', 'electric'],
+                  ['LPG', 'lpg'],
+                  ['수소', 'hydrogen'],
+                  ['CNG', 'cng'],
+                  ['기타', 'other']
+                ], params[:fuel_type]), {}, 
+                { class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" } %>
+          </div>
+          
+          <!-- 검색 버튼 -->
+          <div>
+            <%= form.submit "검색", class: "w-full bg-blue-600 text-white py-3 px-6 rounded-xl hover:bg-blue-700 transition-colors duration-200 font-semibold" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- 경매 목록 -->
+    <% if @auctions.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% @auctions.each do |auction| %>
+          <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+            <!-- 차량 이미지 -->
+            <div class="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300">
+              <% if auction.vehicle.images.attached? && auction.vehicle.images.any? %>
+                <%= image_tag rails_blob_path(auction.vehicle.images.first, only_path: true), class: "w-full h-full object-cover" %>
+              <% else %>
+                <div class="w-full h-full flex items-center justify-center">
+                  <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                  </svg>
+                </div>
+              <% end %>
+              <!-- 상태 배지 -->
+              <div class="absolute top-4 right-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
+                  <%= auction.currently_active? ? 'bg-blue-100 text-blue-800' : 
+                      auction.currently_upcoming? ? 'bg-yellow-100 text-yellow-800' : 
+                      'bg-red-100 text-red-800' %>">
+                  <%= auction.currently_active? ? '진행 중' : 
+                      auction.currently_upcoming? ? '예정' : '종료' %>
+                </span>
+              </div>
+            </div>
+
+            <!-- 경매 정보 -->
+            <div class="p-6">
+              <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2"><%= auction.vehicle.title %></h3>
+              <div class="flex items-center text-sm text-gray-600 mb-4">
+                <span><%= auction.vehicle.brand %> <%= auction.vehicle.model %></span>
+                <span class="mx-2">•</span>
+                <span><%= auction.vehicle.year %>년</span>
+                <span class="mx-2">•</span>
+                <span><%= format_number(auction.vehicle.mileage) %>km</span>
+              </div>
+
+              <!-- 가격 정보 -->
+              <div class="mb-4">
+                <div class="text-2xl font-bold text-blue-600 mb-2"><%= format_currency_detailed(auction.current_price) %></div>
+                <div class="text-sm text-gray-600">입찰 수: <span class="font-medium"><%= auction.bids.count %>건</span></div>
+              </div>
+
+              <!-- 시간 정보 -->
+              <div class="mb-4 p-3 bg-gray-50 rounded-lg">
+                <% if auction.currently_active? %>
+                  <div class="text-sm text-gray-600">남은 시간</div>
+                  <div class="text-lg font-bold text-red-600" id="countdown-<%= auction.id %>">
+                    <!-- JavaScript로 카운트다운 구현 -->
+                  </div>
+                <% elsif auction.currently_upcoming? %>
+                  <div class="text-sm text-gray-600">시작 예정</div>
+                  <div class="font-medium text-gray-900">
+                    <%= auction.start_time.strftime("%m월 %d일 %H:%M") %>
+                  </div>
+                <% else %>
+                  <div class="text-sm text-gray-600">경매 종료</div>
+                  <div class="font-medium text-gray-900">
+                    <%= auction.end_time.strftime("%m월 %d일 %H:%M") %>
+                  </div>
+                <% end %>
+              </div>
+
+              <!-- 액션 버튼 -->
+              <%= link_to "상세보기", auction_path(auction), 
+                  class: "block w-full text-center bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200" %>
+              <% if auction.currently_active? && buyer_signed_in? %>
+                <div class="mt-3">
+                  <%= link_to "입찰하기", auction_path(auction), 
+                      class: "block w-full text-center bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition-colors duration-200" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- 페이지네이션 -->
+      <% if @auctions.respond_to?(:current_page) %>
+        <div class="mt-12 flex justify-center">
+          <%= paginate @auctions %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="text-center py-16">
+        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">진행 중인 경매가 없습니다</h3>
+        <p class="text-gray-600 mb-6">새로운 경매가 등록되면 여기에 표시됩니다.</p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- 카운트다운 JavaScript -->
+<script>
+  // 카운트다운 타이머 구현
+  function updateCountdowns() {
+    <% @auctions.select(&:currently_active?).each do |auction| %>
+      const endTime<%= auction.id %> = new Date('<%= auction.end_time.iso8601 %>').getTime();
+      const element<%= auction.id %> = document.getElementById('countdown-<%= auction.id %>');
+      
+      if (element<%= auction.id %>) {
+        const now = new Date().getTime();
+        const distance = endTime<%= auction.id %> - now;
+        
+        if (distance > 0) {
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          
+          element<%= auction.id %>.innerHTML = days + "일 " + hours + "시 " + minutes + "분 " + seconds + "초";
+        } else {
+          element<%= auction.id %>.innerHTML = "경매 종료";
+        }
+      }
+    <% end %>
+  }
+  
+  // 1초마다 업데이트
+  setInterval(updateCountdowns, 1000);
+  updateCountdowns(); // 즉시 실행
+</script>

@@ -1,0 +1,194 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">사용자 관리</h1>
+          <p class="mt-2 text-gray-600">판매자와 구매자를 관리하세요</p>
+        </div>
+        <div class="flex space-x-4">
+          <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-sm font-medium text-gray-500">대기 중인 판매자</div>
+            <div class="text-2xl font-bold text-yellow-600"><%= @pending_sellers.count %></div>
+          </div>
+          <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-sm font-medium text-gray-500">승인된 판매자</div>
+            <div class="text-2xl font-bold text-green-600"><%= @approved_sellers.count %></div>
+          </div>
+          <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-sm font-medium text-gray-500">총 구매자</div>
+            <div class="text-2xl font-bold text-blue-600"><%= @buyers.count %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="mb-8">
+      <nav class="flex space-x-8">
+        <button class="px-3 py-2 text-sm font-medium text-blue-600 border-b-2 border-blue-600">
+          판매자 (<%= @sellers.count %>)
+        </button>
+        <button class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+          구매자 (<%= @buyers.count %>)
+        </button>
+      </nav>
+    </div>
+
+    <!-- Sellers Section -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">판매자 목록</h2>
+      </div>
+      
+      <% if @sellers.any? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  판매자 정보
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  회사 정보
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  등록일
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  상태
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  작업
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @sellers.each do |seller| %>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                          <span class="text-sm font-medium text-blue-600">
+                            <%= seller.name&.first&.upcase || 'S' %>
+                          </span>
+                        </div>
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900"><%= seller.name %></div>
+                        <div class="text-sm text-gray-500"><%= seller.email %></div>
+                        <div class="text-sm text-gray-500"><%= seller.phone %></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900"><%= seller.company_name %></div>
+                    <div class="text-sm text-gray-500"><%= seller.business_registration_number %></div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <%= seller.created_at.strftime('%Y-%m-%d') %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <% if seller.approved? %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        승인됨
+                      </span>
+                    <% else %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        대기 중
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <%= link_to "상세보기", admin_user_path(seller, type: 'seller'), 
+                        class: "text-blue-600 hover:text-blue-900" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">등록된 판매자가 없습니다</h3>
+          <p class="mt-1 text-sm text-gray-500">아직 판매자 등록이 없습니다.</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Buyers Section -->
+    <div class="mt-8 bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">구매자 목록</h2>
+      </div>
+      
+      <% if @buyers.any? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  구매자 정보
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  국가
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  등록일
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  작업
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @buyers.each do |buyer| %>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                          <span class="text-sm font-medium text-green-600">
+                            <%= buyer.name&.first&.upcase || 'B' %>
+                          </span>
+                        </div>
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900"><%= buyer.name %></div>
+                        <div class="text-sm text-gray-500"><%= buyer.email %></div>
+                        <div class="text-sm text-gray-500"><%= buyer.phone %></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <%= buyer.country %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <%= buyer.created_at.strftime('%Y-%m-%d') %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <%= link_to "상세보기", admin_user_path(buyer, type: 'buyer'), 
+                        class: "text-blue-600 hover:text-blue-900" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">등록된 구매자가 없습니다</h3>
+          <p class="mt-1 text-sm text-gray-500">아직 구매자 등록이 없습니다.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div> 

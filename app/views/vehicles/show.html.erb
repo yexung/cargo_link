@@ -1,0 +1,150 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <!-- 헤더 -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900"><%= @vehicle.title %></h1>
+            <p class="mt-1 text-gray-600">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                <%= @vehicle.pending? ? 'bg-yellow-100 text-yellow-800' : 
+                    @vehicle.active? ? 'bg-green-100 text-green-800' : 
+                    @vehicle.sold? ? 'bg-red-100 text-red-800' : 
+                    'bg-gray-100 text-gray-800' %>">
+                <%= @vehicle.pending? ? '승인 대기' : 
+                    @vehicle.active? ? '승인 완료' : 
+                    @vehicle.sold? ? '판매 완료' : 
+                    @vehicle.rejected? ? '승인 거부' : @vehicle.status %>
+              </span>
+            </p>
+          </div>
+          <div class="text-right">
+            <p class="text-2xl font-bold text-blue-600">
+              <%= format_price(@vehicle.starting_price) %>
+            </p>
+            <% if @vehicle.reserve_price.present? %>
+              <p class="text-sm text-gray-500">
+                희망가: <%= format_price(@vehicle.reserve_price) %>
+              </p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6">
+        <!-- 이미지 섹션 -->
+        <div>
+          <div class="aspect-w-16 aspect-h-12 bg-gray-200 rounded-lg mb-4">
+            <% if @vehicle.images.attached? %>
+              <img src="<%= url_for(@vehicle.images.first) %>" alt="<%= @vehicle.title %>" 
+                   class="w-full h-64 object-cover rounded-lg">
+            <% else %>
+              <div class="flex items-center justify-center h-64 bg-gray-200 rounded-lg">
+                <svg class="h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+              </div>
+            <% end %>
+          </div>
+          
+          <!-- 추가 이미지들 -->
+          <% if @vehicle.images.attached? && @vehicle.images.count > 1 %>
+            <div class="grid grid-cols-4 gap-2">
+              <% @vehicle.images.drop(1).first(4).each do |image| %>
+                <img src="<%= url_for(image) %>" alt="<%= @vehicle.title %>" 
+                     class="w-full h-16 object-cover rounded-md">
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- 차량 정보 -->
+        <div class="space-y-6">
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">차량 정보</h3>
+            <dl class="grid grid-cols-2 gap-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">브랜드</dt>
+                <dd class="text-sm text-gray-900"><%= @vehicle.brand %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">모델</dt>
+                <dd class="text-sm text-gray-900"><%= @vehicle.model %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">연식</dt>
+                <dd class="text-sm text-gray-900"><%= @vehicle.year %>년</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">주행거리</dt>
+                <dd class="text-sm text-gray-900"><%= format_number(@vehicle.mileage) %>km</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">연료</dt>
+                <dd class="text-sm text-gray-900">
+                  <%= @vehicle.gasoline? ? '가솔린' : 
+                      @vehicle.diesel? ? '디젤' : 
+                      @vehicle.hybrid? ? '하이브리드' : 
+                      @vehicle.electric? ? '전기' : @vehicle.fuel_type %>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">변속기</dt>
+                <dd class="text-sm text-gray-900">
+                  <%= @vehicle.manual? ? '수동' : 
+                      @vehicle.automatic? ? '자동' : 
+                      @vehicle.cvt? ? 'CVT' : @vehicle.transmission %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">상세 설명</h3>
+            <p class="text-gray-700 leading-relaxed"><%= simple_format(@vehicle.description) %></p>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">판매자 정보</h3>
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <p class="text-sm text-gray-600">판매자: <%= @vehicle.seller.name %></p>
+              <p class="text-sm text-gray-600">등록일: <%= @vehicle.created_at.strftime('%Y년 %m월 %d일') %></p>
+            </div>
+          </div>
+
+          <!-- 경매 정보 -->
+          <% if @auction %>
+            <div class="bg-blue-50 p-4 rounded-lg">
+              <h3 class="text-lg font-medium text-blue-900 mb-2">진행 중인 경매</h3>
+              <p class="text-blue-700">현재가: <%= format_price(@current_price) %></p>
+              <p class="text-sm text-blue-600">경매 종료: <%= @auction.end_time.strftime('%Y년 %m월 %d일 %H:%M') %></p>
+            </div>
+          <% elsif @vehicle.active? %>
+            <div class="bg-green-50 p-4 rounded-lg">
+              <p class="text-green-700">이 차량은 경매 등록이 가능합니다.</p>
+            </div>
+          <% end %>
+
+          <!-- 액션 버튼 -->
+          <div class="flex space-x-3">
+            <%= link_to "목록으로", vehicles_path, 
+                class: "flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-md text-center hover:bg-gray-300" %>
+            
+            <% if @vehicle.has_active_auction? %>
+              <%= link_to "경매 관리", auction_path(@vehicle.current_auction), 
+                  class: "flex-1 bg-green-600 text-white px-4 py-2 rounded-md text-center hover:bg-green-700" %>
+            <% elsif @vehicle.active? %>
+              <%= link_to "경매 개설", new_auction_path(vehicle_id: @vehicle.id), 
+                  class: "flex-1 bg-blue-600 text-white px-4 py-2 rounded-md text-center hover:bg-blue-700" %>
+            <% end %>
+            
+            <%= link_to "수정", edit_vehicle_path(@vehicle), 
+                class: "flex-1 bg-orange-600 text-white px-4 py-2 rounded-md text-center hover:bg-orange-700" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

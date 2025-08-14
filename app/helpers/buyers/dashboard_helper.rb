@@ -1,0 +1,2 @@
+module Buyers::DashboardHelper
+end

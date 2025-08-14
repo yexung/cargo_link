@@ -1,0 +1,13 @@
+구매자 계정 정보:
+1. buyer1@test.com / password (구매자1)
+2. buyer2@test.com / password (John Smith) 
+3. 123@gmail.com / password (asd)
+4. 1234@gmail.com / password (예성)
+
+모두 승인된 계정입니다.
+
+입찰 테스트:
+1. 먼저 seller 계정에서 로그아웃
+2. 구매자 계정으로 로그인 (예: buyer1@test.com / password)
+3. http://localhost:3000/auctions/8 접속
+4. 입찰 폼에서 15,200,000원 이상 입력 후 입찰

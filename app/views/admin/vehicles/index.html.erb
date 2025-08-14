@@ -1,0 +1,180 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">차량 관리</h1>
+          <p class="mt-2 text-gray-600">등록된 차량을 확인하고 승인/거부하세요</p>
+        </div>
+        <div class="flex space-x-4">
+          <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-sm font-medium text-gray-500">대기 중인 차량</div>
+            <div class="text-2xl font-bold text-yellow-600"><%= @pending_vehicles.count %></div>
+          </div>
+          <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-sm font-medium text-gray-500">승인된 차량</div>
+            <div class="text-2xl font-bold text-green-600"><%= @approved_vehicles.count %></div>
+          </div>
+          <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-sm font-medium text-gray-500">거부된 차량</div>
+            <div class="text-2xl font-bold text-red-600"><%= @rejected_vehicles.count %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="mb-6">
+      <nav class="flex space-x-8">
+        <button onclick="filterVehicles('all')" class="filter-tab active py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600">
+          전체 (<%= @vehicles.count %>)
+        </button>
+        <button onclick="filterVehicles('pending')" class="filter-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700">
+          대기 중 (<%= @pending_vehicles.count %>)
+        </button>
+        <button onclick="filterVehicles('active')" class="filter-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700">
+          승인됨 (<%= @approved_vehicles.count %>)
+        </button>
+        <button onclick="filterVehicles('rejected')" class="filter-tab py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700">
+          거부됨 (<%= @rejected_vehicles.count %>)
+        </button>
+      </nav>
+    </div>
+
+    <!-- Vehicles List -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">차량 목록</h2>
+      </div>
+      
+      <% if @vehicles.any? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  차량 정보
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  판매자
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  가격
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  등록일
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  상태
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  작업
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @vehicles.each do |vehicle| %>
+                <tr class="vehicle-row" data-status="<%= vehicle.status %>">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">
+                      <%= vehicle.display_title %>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                      <%= vehicle.year %>년 | <%= format_number(vehicle.mileage) %>km
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">
+                      <%= vehicle.seller.name %>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                      <%= vehicle.seller.email %>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">
+                      <%= vehicle.formatted_price %>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <%= vehicle.created_at.strftime('%Y-%m-%d') %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <% case vehicle.status %>
+                    <% when 'pending' %>
+                      <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                        대기 중
+                      </span>
+                    <% when 'active' %>
+                      <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                        승인됨
+                      </span>
+                    <% when 'rejected' %>
+                      <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                        거부됨
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div class="flex space-x-2">
+                      <%= link_to "상세보기", admin_vehicle_path(vehicle), 
+                          class: "text-blue-600 hover:text-blue-900" %>
+                      <% if vehicle.status == 'pending' %>
+                        <%= button_to "승인", approve_admin_vehicle_path(vehicle), 
+                            method: :patch,
+                            data: { confirm: '이 차량을 승인하시겠습니까?' },
+                            class: "text-green-600 hover:text-green-900 bg-transparent border-none cursor-pointer" %>
+                        <%= button_to "거부", reject_admin_vehicle_path(vehicle), 
+                            method: :patch,
+                            data: { confirm: '이 차량을 거부하시겠습니까?' },
+                            class: "text-red-600 hover:text-red-900 bg-transparent border-none cursor-pointer" %>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">등록된 차량이 없습니다</h3>
+          <p class="mt-1 text-sm text-gray-500">새로운 차량이 등록되면 여기에 표시됩니다.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+function filterVehicles(status) {
+  // Update tab styles
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.classList.remove('active', 'border-blue-500', 'text-blue-600');
+    tab.classList.add('border-transparent', 'text-gray-500');
+  });
+  
+  event.target.classList.add('active', 'border-blue-500', 'text-blue-600');
+  event.target.classList.remove('border-transparent', 'text-gray-500');
+  
+  // Filter rows
+  const rows = document.querySelectorAll('.vehicle-row');
+  rows.forEach(row => {
+    if (status === 'all' || row.dataset.status === status) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+}
+</script>
+
+<style>
+.filter-tab.active {
+  @apply border-blue-500 text-blue-600;
+}
+</style> 
