@@ -35,3 +35,7 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# Ignore Playwright browsers
+node_modules/playwright-core/.local-browsers/
+.playwright/
