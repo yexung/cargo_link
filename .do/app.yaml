@@ -21,7 +21,7 @@ services:
     value: production
   - key: RAILS_MASTER_KEY
     type: SECRET
-    value: YOUR_MASTER_KEY  # rails credentials:show에서 확인 가능
+    value: bedab7b024e6455ee014c2b83ad2e723
   - key: DATABASE_URL
     type: SECRET
     value: YOUR_DATABASE_URL  # DigitalOcean에서 자동 설정됨
@@ -60,4 +60,4 @@ workers:
     value: production
   - key: RAILS_MASTER_KEY
     type: SECRET
-    value: YOUR_MASTER_KEY
+    value: bedab7b024e6455ee014c2b83ad2e723
