@@ -7,7 +7,7 @@
         <p class="mt-2 text-gray-600">개인 간 직접 거래로 더 유연한 중고차 거래를 경험하세요</p>
       </div>
       <% if seller_signed_in? %>
-        <a href="<%= new_trade_path %>" class="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition-colors duration-200 font-semibold">
+        <a href="/trades/new" class="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition-colors duration-200 font-semibold">
           P2P 거래 등록
         </a>
       <% else %>
@@ -183,7 +183,7 @@
         <h3 class="text-xl font-semibold text-gray-900 mb-2">등록된 P2P 거래가 없습니다</h3>
         <p class="text-gray-600 mb-6">첫 번째 P2P 거래를 등록해보세요!</p>
         <% if seller_signed_in? %>
-          <a href="<%= new_trade_path %>" class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition-colors duration-200">
+          <a href="/trades/new" class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition-colors duration-200">
             P2P 거래 등록하기
             <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
