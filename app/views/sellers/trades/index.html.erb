@@ -95,16 +95,16 @@
                     <% if trade.active? %>
                       <%= link_to "수정", edit_sellers_trade_path(trade), 
                           class: "text-indigo-600 hover:text-indigo-900" %>
-                      <%= link_to "완료", complete_trade_sellers_trade_path(trade), 
+                      <%= button_to "완료", complete_trade_sellers_trade_path(trade), 
                           method: :patch,
-                          data: { confirm: "정말로 이 거래를 완료로 표시하시겠습니까?" },
-                          class: "text-green-600 hover:text-green-900" %>
+                          data: { turbo_confirm: "정말로 이 거래를 완료로 표시하시겠습니까?" },
+                          class: "text-green-600 hover:text-green-900 border-0 bg-transparent p-0 underline" %>
                     <% end %>
                     
-                    <%= link_to "삭제", sellers_trade_path(trade), 
+                    <%= button_to "삭제", sellers_trade_path(trade), 
                         method: :delete,
-                        data: { confirm: "정말로 이 거래를 삭제하시겠습니까?" },
-                        class: "text-red-600 hover:text-red-900" %>
+                        data: { turbo_confirm: "정말로 이 거래를 삭제하시겠습니까?" },
+                        class: "text-red-600 hover:text-red-900 border-0 bg-transparent p-0 underline" %>
                   </td>
                 </tr>
               <% end %>

@@ -1,0 +1,134 @@
+<%# 판매자 P2P 거래 상세보기 페이지 %>
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- 뒤로가기 버튼 -->
+    <div class="mb-6">
+      <%= link_to "← P2P 거래 목록으로 돌아가기", sellers_trades_path, class: "text-green-600 hover:text-green-800" %>
+    </div>
+
+    <!-- 거래 정보 카드 -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex justify-between items-start">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">
+              <%= @trade&.title || "거래 정보" %>
+            </h1>
+            <p class="text-sm text-gray-500 mt-1">
+              등록일: <%= @trade&.created_at&.strftime("%Y년 %m월 %d일") || "알 수 없음" %>
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <% if @trade.present? %>
+              <%= link_to "수정", edit_sellers_trade_path(@trade), 
+                  class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors" %>
+              <%= button_to "삭제", sellers_trade_path(@trade), 
+                  method: :delete,
+                  data: { 
+                    turbo_confirm: "정말 삭제하시겠습니까?"
+                  },
+                  class: "bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors border-0" %>
+            <% else %>
+              <p class="text-red-600">거래 정보를 불러올 수 없습니다.</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 py-6">
+        <!-- 기본 정보 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">기본 정보</h3>
+            <dl class="space-y-3">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">가격</dt>
+                <dd class="text-lg font-semibold text-green-600">
+                  <%= number_to_currency(@trade&.price || 0, unit: "₩", precision: 0) %>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">상태</dt>
+                <dd>
+                  <span class="px-2 py-1 text-xs font-medium rounded-full <%= (@trade&.status == 'active') ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
+                    <%= @trade&.status == 'active' ? '거래 가능' : (@trade&.status&.humanize || '알 수 없음') %>
+                  </span>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">거래 방식</dt>
+                <dd class="text-sm text-gray-900"><%= @trade&.trade_type&.humanize || "미지정" %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">위치</dt>
+                <dd class="text-sm text-gray-900"><%= @trade&.location || "미지정" %></dd>
+              </div>
+            </dl>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">차량 정보</h3>
+            <dl class="space-y-3">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">브랜드/모델</dt>
+                <dd class="text-sm text-gray-900">
+                  <%= [@trade&.brand, @trade&.model].compact.join(" ") || "미지정" %>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">연식</dt>
+                <dd class="text-sm text-gray-900"><%= @trade&.year || "미지정" %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">주행거리</dt>
+                <dd class="text-sm text-gray-900">
+                  <%= @trade&.mileage ? "#{number_with_delimiter(@trade.mileage)}km" : "미지정" %>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">연료/변속기</dt>
+                <dd class="text-sm text-gray-900">
+                  <%= [@trade&.fuel_type, @trade&.transmission].compact.join(" / ") || "미지정" %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- 설명 -->
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">상세 설명</h3>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <p class="text-gray-700 whitespace-pre-line">
+              <%= @trade&.description || "설명이 없습니다." %>
+            </p>
+          </div>
+        </div>
+
+        <!-- 연락처 정보 -->
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">연락처</h3>
+          <div class="bg-blue-50 rounded-lg p-4">
+            <p class="text-blue-800">
+              <%= @trade&.contact_info || "연락처 정보가 없습니다." %>
+            </p>
+          </div>
+        </div>
+
+        <!-- 액션 버튼 -->
+        <div class="flex gap-4 pt-6 border-t border-gray-200">
+          <% if @trade&.status == 'active' %>
+            <%= button_to "거래 완료 처리", complete_trade_sellers_trade_path(@trade), 
+                method: :patch,
+                data: { 
+                  turbo_confirm: "거래를 완료로 처리하시겠습니까?"
+                },
+                class: "bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors border-0" %>
+          <% end %>
+          <%= link_to "목록으로", sellers_trades_path, 
+              class: "bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition-colors" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

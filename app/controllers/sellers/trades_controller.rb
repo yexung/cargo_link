@@ -25,10 +25,14 @@ class Sellers::TradesController < ApplicationController
     @trade = current_seller.trades.build(trade_params)
     @trade.status = 'active'
     
-    if @trade.save
-      redirect_to sellers_trade_path(@trade), notice: 'P2P 거래가 성공적으로 등록되었습니다.'
-    else
-      render :new, status: :unprocessable_entity
+    respond_to do |format|
+      if @trade.save
+        format.html { redirect_to sellers_trade_path(@trade), notice: 'P2P 거래가 성공적으로 등록되었습니다.' }
+        format.turbo_stream { redirect_to sellers_trade_path(@trade), notice: 'P2P 거래가 성공적으로 등록되었습니다.' }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render :new, status: :unprocessable_entity }
+      end
     end
   end
 

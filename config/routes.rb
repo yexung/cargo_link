@@ -96,7 +96,7 @@ Rails.application.routes.draw do
         patch :end_auction
       end
     end
-    resources :trades, except: [:index] do
+    resources :trades do
       member do
         get :complete_trade
         patch :complete_trade
