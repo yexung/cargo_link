@@ -12,6 +12,12 @@ Rails.application.routes.draw do
   devise_for :sellers, controllers: { registrations: 'sellers/registrations' }
   devise_for :users
   root "home#index"
+  
+  # Static pages
+  get '/help', to: 'pages#help'
+  get '/faq', to: 'pages#faq'
+  get '/terms', to: 'pages#terms'
+  get '/privacy', to: 'pages#privacy'
 
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
