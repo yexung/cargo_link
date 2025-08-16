@@ -7,7 +7,7 @@
         <h1 class="text-3xl font-bold text-gray-900">P2P 거래 관리</h1>
         <p class="mt-2 text-gray-600">등록한 P2P 거래를 관리하고 상태를 업데이트하세요</p>
       </div>
-      <%= link_to "새 거래 등록", new_sellers_trade_path, 
+      <%= link_to "새 거래 등록", "https://cargolink.cc/trades/new", 
           class: "bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors" %>
     </div>
 
@@ -128,7 +128,7 @@
         </div>
         <h3 class="text-xl font-semibold text-gray-900 mb-2">등록된 P2P 거래가 없습니다</h3>
         <p class="text-gray-600 mb-6">첫 번째 P2P 거래를 등록해보세요!</p>
-        <%= link_to "P2P 거래 등록하기", new_sellers_trade_path, 
+        <%= link_to "P2P 거래 등록하기", "https://cargolink.cc/trades/new", 
             class: "inline-flex items-center px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-200" %>
       </div>
     <% end %>
