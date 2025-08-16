@@ -12,10 +12,14 @@ class Sellers::VehiclesController < Sellers::BaseController
   def create
     @vehicle = current_seller.vehicles.build(vehicle_params)
     
-    if @vehicle.save
-      redirect_to sellers_vehicle_path(@vehicle), notice: '차량이 성공적으로 등록되었습니다.'
-    else
-      render :new, status: :unprocessable_entity
+    respond_to do |format|
+      if @vehicle.save
+        format.html { redirect_to sellers_vehicle_path(@vehicle), notice: '차량이 성공적으로 등록되었습니다.' }
+        format.turbo_stream { redirect_to sellers_vehicle_path(@vehicle), notice: '차량이 성공적으로 등록되었습니다.' }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -23,16 +27,23 @@ class Sellers::VehiclesController < Sellers::BaseController
   end
 
   def update
-    if @vehicle.update(vehicle_params)
-      redirect_to sellers_vehicle_path(@vehicle), notice: '차량 정보가 성공적으로 수정되었습니다.'
-    else
-      render :edit, status: :unprocessable_entity
+    respond_to do |format|
+      if @vehicle.update(vehicle_params)
+        format.html { redirect_to sellers_vehicle_path(@vehicle), notice: '차량 정보가 성공적으로 수정되었습니다.' }
+        format.turbo_stream { redirect_to sellers_vehicle_path(@vehicle), notice: '차량 정보가 성공적으로 수정되었습니다.' }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
     @vehicle.destroy
-    redirect_to sellers_dashboard_path, notice: '차량이 삭제되었습니다.'
+    respond_to do |format|
+      format.html { redirect_to sellers_dashboard_path, notice: '차량이 삭제되었습니다.' }
+      format.turbo_stream { redirect_to sellers_dashboard_path, notice: '차량이 삭제되었습니다.' }
+    end
   end
 
   private

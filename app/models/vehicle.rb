@@ -8,7 +8,6 @@ class Vehicle < ApplicationRecord
 
   # Associations
   has_many :auctions, dependent: :destroy
-  has_many :trades, dependent: :destroy
   has_many_attached :images
 
   # Validations
