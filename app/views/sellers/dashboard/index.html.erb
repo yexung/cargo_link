@@ -9,7 +9,7 @@
             <p class="mt-1 text-sm text-gray-600">안녕하세요, <%= current_seller.name %>님! 차량과 경매를 관리하세요.</p>
           </div>
           <div class="flex space-x-3">
-            <%= link_to "차량 및 경매 등록", new_sellers_vehicle_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+            <%= link_to "차량 및 경매 등록", "https://cargolink.cc/vehicles/new", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
             <%= link_to "P2P 거래 관리", sellers_trades_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" %>
             <%= link_to "환전 관리", withdrawal_requests_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500" %>
           </div>
@@ -209,7 +209,7 @@
               <h3 class="mt-2 text-sm font-medium text-gray-900">등록된 차량이 없습니다</h3>
               <p class="mt-1 text-sm text-gray-500">첫 번째 차량을 등록해보세요</p>
               <div class="mt-6">
-                <%= link_to "차량 등록하기", new_sellers_vehicle_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" %>
+                <%= link_to "차량 등록하기", "https://cargolink.cc/vehicles/new", class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" %>
               </div>
             </div>
           <% end %>
@@ -318,7 +318,7 @@
             <h3 class="mt-2 text-sm font-medium text-gray-900">진행 중인 경매가 없습니다</h3>
             <p class="mt-1 text-sm text-gray-500">차량을 등록한 후 경매를 시작해보세요</p>
             <div class="mt-6">
-              <%= link_to "차량 등록하기", new_sellers_vehicle_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" %>
+              <%= link_to "차량 등록하기", "https://cargolink.cc/vehicles/new", class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" %>
             </div>
           </div>
         <% end %>
